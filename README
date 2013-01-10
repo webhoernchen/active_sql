@@ -1,0 +1,63 @@
+ActiveSql
+=========
+
+ActiveSql is a libary to write complicated sql conditions in Ruby syntax.
+
+Example
+=======
+
+class Seminar < ActiveRecord::Base
+  has_many :events, :class_name => 'SeminarEvent'
+end
+
+class SeminarEvent < ActiveRecord::Base
+  belongs_to :seminar
+  has_and_belongs_to_many :participants, :class_name => 'User'
+end
+
+class User < ActiveRecord::Base
+  has_and_belongs_to_many :seminar_events
+end
+
+We want to find all Seminars with an Event in 3 weeks and a participant which name starts with 'Max'.
+
+Seminar.by_active_sql_condition_scope do |seminar|
+  seminar.events do |event|
+    event.start_date >= 3.weeks.from_now.to_date
+    event.participants do |participant|
+      participant.name.starts_with 'Max'
+    end
+  end
+end.all
+
+
+We want to sort all seminars by last the last event.
+
+Seminar.by_active_sql_order_scope do |seminar|
+  seminar.max {|s| s.events.start_date }
+end
+
+You can find more examples, condition and sort methods in the specific classes:
+ * ActiveSql::Condition
+ * ActiveSql::Finder
+ * ActiveSql::SortCondition
+
+
+Tested with:
+------------
+
+* Rails 2.3.15
+* Rails 3.0.19
+
+
+Thats all!
+
+For all other improvements:
+* Please fork this GEM and send a pull request!
+
+
+Credits
+-------
+
+Written by Christian Eichhorn
+http://www.webmasters.de
