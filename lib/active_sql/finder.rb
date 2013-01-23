@@ -170,10 +170,18 @@ module ActiveSql::Finder
   end
 
   def active_sql_scope(name, *args, &block)
-    if self.respond_to?(:scope)
+    if responds_to_scope?
       scope name, *args, &block
     else
       named_scope name, *args, &block
+    end
+  end
+
+  def responds_to_scope?
+    if @cached_responds_to_scope.nil?
+      @cached_responds_to_scope = public_methods.collect(&:to_sym).include?(:scope)
+    else
+      @cached_responds_to_scope
     end
   end
 end
