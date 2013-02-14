@@ -1,0 +1,7 @@
+# Editor
+*.swp
+*.un~
+
+# Logs
+*.log
+schema.rb
