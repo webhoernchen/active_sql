@@ -498,17 +498,20 @@ module ActiveSql
         if !value.nil? && value.is_a?(String)
           sql_condition_method = sql_condition_method.gsub('?', 'LOWER(?)')
           table_column = "LOWER(#{table_column})"
+        elsif value.is_a?(self.class)
+          value.parent.childs_hash.delete_if {|k, v| v.object_id == value.object_id }
+          column_key = "#{value.quoted_table_name}.#{value.column_name}"
+          sql_condition_method = sql_condition_method.gsub('?', column_key)
         end
         
         self.condition_methods << "#{table_column} #{sql_condition_method}"
         
         if value.is_a?(Array)
           value.each {|v| self.cond_values << v }
-        else
+        elsif !value.is_a?(self.class)
           self.cond_values << value
         end
       end
-    end
     
     # create or find the child condition for the given args
     # +name+: can be a column name or a reflection name of the given klass
