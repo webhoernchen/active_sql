@@ -5,28 +5,28 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
 
   def self.should_find_a_person_with_first_name(first_name)
     should "find a person with first_name '#{first_name}'" do 
-      person = Factory :active_sql_person, :first_name => first_name
+      person = FactoryGirl.create :active_sql_person, :first_name => first_name
       assert subject.include?(person)
     end
   end
   
   def self.should_not_find_a_person_with_first_name(first_name)
     should "not find a person with first_name '#{first_name}'" do 
-      person = Factory :active_sql_person, :first_name => first_name
+      person = FactoryGirl.create :active_sql_person, :first_name => first_name
       assert !subject.include?(person)
     end
   end
 
   def self.should_find_a_person_with_birthday(birthday)
     should "find a person with birthday'#{birthday}'" do 
-      person = Factory :active_sql_person, :birthday => birthday
+      person = FactoryGirl.create :active_sql_person, :birthday => birthday
       assert subject.include?(person)
     end
   end
   
   def self.should_not_find_a_person_with_birthday(birthday)
     should "not find a person with birthday '#{birthday}'" do 
-      person = Factory :active_sql_person, :birthday => birthday
+      person = FactoryGirl.create :active_sql_person, :birthday => birthday
       assert !subject.include?(person)
     end
   end
@@ -229,25 +229,25 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
     should_not_raise_an_error
 
     should "find an organisation with 2 employees" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
 
       assert subject.include?(organisation)
     end
 
     should "not find an organisation with 1 employee" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
 
       assert !subject.include?(organisation)
     end
 
     should "not find an organisation with 3 employees" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
 
       assert !subject.include?(organisation)
     end
@@ -263,30 +263,30 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
     should_not_raise_an_error
 
     should "find an organisation with an employee with birthday 10.years.ago" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
 
       assert subject.include?(organisation)
     end
 
     should "find an organisation with an employee with birthday 10 years ago and one with birthday 11 years ago" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 11.years.ago.to_date
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 11.years.ago.to_date
 
       assert subject.include?(organisation)
     end
 
     should "not find an organisation with an employee with birthday 10 years ago and one with birthday 9 years ago" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 9.years.ago
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 9.years.ago
 
       assert !subject.include?(organisation)
     end
 
     should "not find an organisation without employees" do 
-      organisation = Factory :active_sql_organisation
+      organisation = FactoryGirl.create :active_sql_organisation
 
       assert !subject.include?(organisation)
     end
@@ -302,30 +302,30 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
     should_not_raise_an_error
 
     should "find an organisation with an employee with birthday 10.years.ago" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
 
       assert subject.include?(organisation)
     end
 
     should "not find an organisation with an employee with birthday 10 years ago and one with birthday 11 years ago" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 11.years.ago
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 11.years.ago
 
       assert !subject.include?(organisation)
     end
 
     should "find an organisation with an employee with birthday 10 years ago and one with birthday 9 years ago" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
-      Factory :active_sql_person, :active_sql_organisation => organisation, :birthday => 9.years.ago
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 9.years.ago
 
       assert subject.include?(organisation)
     end
 
     should "not find an organisation without employees" do 
-      organisation = Factory :active_sql_organisation
+      organisation = FactoryGirl.create :active_sql_organisation
 
       assert !subject.include?(organisation)
     end
@@ -333,7 +333,7 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
 
   def self.should_find_person(first_name, last_name)
     should "find person #{first_name} #{last_name}" do 
-      person = Factory :active_sql_person, :first_name => first_name, :last_name => last_name 
+      person = FactoryGirl.create :active_sql_person, :first_name => first_name, :last_name => last_name 
 
       assert subject.include?(person)
     end
@@ -341,7 +341,7 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
   
   def self.should_not_find_person(first_name, last_name)
     should "not find person #{first_name} #{last_name}" do 
-      person = Factory :active_sql_person, :first_name => first_name, :last_name => last_name 
+      person = FactoryGirl.create :active_sql_person, :first_name => first_name, :last_name => last_name 
 
       assert !subject.include?(person)
     end
@@ -395,8 +395,8 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
 
   def self.should_find_an_organisation_with_employee(first_name, last_name)
     should "find an organisation with employee #{first_name} #{last_name}" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :first_name => first_name, :last_name => last_name, 
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :first_name => first_name, :last_name => last_name, 
         :active_sql_organisation => organisation
 
       assert subject.include?(organisation)
@@ -405,8 +405,8 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
   
   def self.should_not_find_an_organisation_with_employee(first_name, last_name)
     should "find an organisation with employee #{first_name} #{last_name}" do 
-      organisation = Factory :active_sql_organisation
-      Factory :active_sql_person, :first_name => first_name, :last_name => last_name, 
+      organisation = FactoryGirl.create :active_sql_organisation
+      FactoryGirl.create :active_sql_person, :first_name => first_name, :last_name => last_name, 
         :active_sql_organisation => organisation
 
       assert !subject.include?(organisation)
@@ -467,15 +467,15 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
 
       should "not find an organisation with one employee which last_name is 'Emrich'" do 
-        person = Factory :active_sql_person, :last_name => 'Emrich'
-        organisation = Factory :active_sql_organisation, :employees => [person]
+        person = FactoryGirl.create :active_sql_person, :last_name => 'Emrich'
+        organisation = FactoryGirl.create :active_sql_organisation, :employees => [person]
 
         assert !subject.include?(organisation)
       end
       
       should "find an organisation with one employee which last_name is 'Eichhorn'" do 
-        person = Factory :active_sql_person, :last_name => 'Eichhorn'
-        organisation = Factory :active_sql_organisation, :employees => [person]
+        person = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn'
+        organisation = FactoryGirl.create :active_sql_organisation, :employees => [person]
 
         assert subject.include?(organisation)
       end
@@ -493,17 +493,17 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
 
       should "find employee Remolt which has a colleague Eichhorn" do 
-        organisation = Factory :active_sql_organisation
-        employee = Factory :active_sql_person, :last_name => 'Remolt', :active_sql_organisation => organisation
-        colleage = Factory :active_sql_person, :last_name => 'Eichhorn', :active_sql_organisation => organisation
+        organisation = FactoryGirl.create :active_sql_organisation
+        employee = FactoryGirl.create :active_sql_person, :last_name => 'Remolt', :active_sql_organisation => organisation
+        colleage = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn', :active_sql_organisation => organisation
         
         assert subject.include?(employee)
       end
 
       should "not find employee Eichhorn which has a colleague Remolt" do 
-        organisation = Factory :active_sql_organisation
-        colleague = Factory :active_sql_person, :last_name => 'Remolt', :active_sql_organisation => organisation
-        employee = Factory :active_sql_person, :last_name => 'Eichhorn', :active_sql_organisation => organisation
+        organisation = FactoryGirl.create :active_sql_organisation
+        colleague = FactoryGirl.create :active_sql_person, :last_name => 'Remolt', :active_sql_organisation => organisation
+        employee = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn', :active_sql_organisation => organisation
 
         assert !subject.include?(employee)
       end
@@ -521,25 +521,25 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
 
       should "find an organisation which head has a notebook with number 123456789" do 
-        notebook = Factory :active_sql_notebook, :number => '123456789'
-        person = Factory :active_sql_person, :active_sql_notebook => notebook
-        organisation = Factory :active_sql_organisation, :head => person
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '123456789'
+        person = FactoryGirl.create :active_sql_person, :active_sql_notebook => notebook
+        organisation = FactoryGirl.create :active_sql_organisation, :head => person
 
         assert subject.include?(organisation)
       end
       
       should "not find an organisation which head has a notebook with number 456789123" do 
-        notebook = Factory :active_sql_notebook, :number => '456789123'
-        person = Factory :active_sql_person, :active_sql_notebook => notebook
-        organisation = Factory :active_sql_organisation, :head => person
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '456789123'
+        person = FactoryGirl.create :active_sql_person, :active_sql_notebook => notebook
+        organisation = FactoryGirl.create :active_sql_organisation, :head => person
 
         assert !subject.include?(organisation)
       end
       
       should "not find an organisation which employee has a notebook with number 123456789" do 
-        notebook = Factory :active_sql_notebook, :number => '123456789'
-        organisation = Factory :active_sql_organisation
-        Factory :active_sql_person, :active_sql_notebook => notebook, 
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '123456789'
+        organisation = FactoryGirl.create :active_sql_organisation
+        FactoryGirl.create :active_sql_person, :active_sql_notebook => notebook, 
           :active_sql_organisation => organisation
 
         assert !subject.include?(organisation)
@@ -558,17 +558,17 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
 
       should "not find an organisation which head has a notebook with number 123456789" do 
-        notebook = Factory :active_sql_notebook, :number => '123456789'
-        person = Factory :active_sql_person, :active_sql_notebook => notebook
-        organisation = Factory :active_sql_organisation, :employees => [person]
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '123456789'
+        person = FactoryGirl.create :active_sql_person, :active_sql_notebook => notebook
+        organisation = FactoryGirl.create :active_sql_organisation, :employees => [person]
 
         assert subject.include?(organisation)
       end
       
       should "find an organisation which employee has a notebook with number 123456789" do 
-        notebook = Factory :active_sql_notebook, :number => '123456789'
-        organisation = Factory :active_sql_organisation
-        Factory :active_sql_person, :active_sql_notebook => notebook, 
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '123456789'
+        organisation = FactoryGirl.create :active_sql_organisation
+        FactoryGirl.create :active_sql_person, :active_sql_notebook => notebook, 
           :active_sql_organisation => organisation
 
         assert subject.include?(organisation)
@@ -587,15 +587,15 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
       
       should "find a person which is paying_partner of a notebook with number 123456789" do 
-        person = Factory :active_sql_person
-        notebook = Factory :active_sql_notebook, :number => '123456789', :paying_partner => person
+        person = FactoryGirl.create :active_sql_person
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '123456789', :paying_partner => person
 
         assert subject.include?(person)
       end
       
       should "not find a person which is paying_partner of a notebook with number 123456" do 
-        notebook = Factory :active_sql_notebook, :number => '123456'
-        person = Factory :active_sql_person, :paid_active_sql_notebooks => [notebook]
+        notebook = FactoryGirl.create :active_sql_notebook, :number => '123456'
+        person = FactoryGirl.create :active_sql_person, :paid_active_sql_notebooks => [notebook]
 
         assert !subject.include?(person)
       end
@@ -613,15 +613,15 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
       
       should "find a person which is a employee of 'test_name' organisation" do 
-        organisation = Factory :active_sql_organisation, :name => 'test_name'
-        person = Factory :active_sql_person, :active_sql_organisation => organisation
+        organisation = FactoryGirl.create :active_sql_organisation, :name => 'test_name'
+        person = FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
 
         assert subject.include?(person)
       end
       
       should "not find a person which is a employee of 'other' organisation" do 
-        organisation = Factory :active_sql_organisation, :name => 'other'
-        person = Factory :active_sql_person, :active_sql_organisation => organisation
+        organisation = FactoryGirl.create :active_sql_organisation, :name => 'other'
+        person = FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation
 
         assert !subject.include?(person)
       end
@@ -639,15 +639,15 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
       
       should "find a notebook which paying_partner is a person with last_name 'Eichhorn'" do 
-        person = Factory :active_sql_person, :last_name => 'Eichhorn'
-        notebook = Factory :active_sql_notebook, :paying_partner => person
+        person = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn'
+        notebook = FactoryGirl.create :active_sql_notebook, :paying_partner => person
 
         assert subject.include?(notebook)
       end
       
       should "not find a notebook which paying_partner is a person with last_name 'other_name'" do 
-        person = Factory :active_sql_person, :last_name => 'other_name'
-        notebook = Factory :active_sql_notebook, :paying_partner => person
+        person = FactoryGirl.create :active_sql_person, :last_name => 'other_name'
+        notebook = FactoryGirl.create :active_sql_notebook, :paying_partner => person
 
         assert !subject.include?(notebook)
       end
@@ -665,15 +665,15 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
 
       should "find an organisation which head has a last_name 'Eichhorn'" do 
-        person = Factory :active_sql_person, :last_name => 'Eichhorn'
-        organisation = Factory :active_sql_organisation, :head => person
+        person = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn'
+        organisation = FactoryGirl.create :active_sql_organisation, :head => person
 
         assert subject.include?(organisation)
       end
 
       should "not find an organisation which head has a last_name 'other_last_name'" do 
-        person = Factory :active_sql_person, :last_name => 'other_last_name'
-        organisation = Factory :active_sql_organisation, :head => person
+        person = FactoryGirl.create :active_sql_person, :last_name => 'other_last_name'
+        organisation = FactoryGirl.create :active_sql_organisation, :head => person
 
         assert !subject.include?(organisation)
       end
@@ -691,16 +691,16 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       should_not_raise_an_error
 
       should "find a person with call_number '09111234567'" do 
-        call_number = Factory :active_sql_call_number, :number => '09111234567'
-        person = Factory :active_sql_person
+        call_number = FactoryGirl.create :active_sql_call_number, :number => '09111234567'
+        person = FactoryGirl.create :active_sql_person
         person.active_sql_call_numbers << call_number
 
         assert subject.include?(person)
       end
 
       should "not find a person with call_number '19111234567'" do 
-        call_number = Factory :active_sql_call_number, :number => '19111234567'
-        person = Factory :active_sql_person
+        call_number = FactoryGirl.create :active_sql_call_number, :number => '19111234567'
+        person = FactoryGirl.create :active_sql_person
         person.active_sql_call_numbers << call_number
 
         assert !subject.include?(person)
@@ -710,9 +710,9 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
 
   context "Given 3 organisations with different names;" do 
     setup do 
-      @organisation_siemens = Factory :active_sql_organisation, :name => 'Siemens'
-      @organisation_which_name_is_nil = Factory :active_sql_organisation, :name => nil
-      @organisation_which_name_is_empty = Factory :active_sql_organisation, :name => ''
+      @organisation_siemens = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
+      @organisation_which_name_is_nil = FactoryGirl.create :active_sql_organisation, :name => nil
+      @organisation_which_name_is_empty = FactoryGirl.create :active_sql_organisation, :name => ''
     end
 
     context "condition for name is_not_nil" do 
@@ -834,17 +834,17 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
 
   context "Given 3 people with call_numbers of the same organisation;" do 
     setup do 
-      @other_organisation = Factory :active_sql_organisation
-      @employee_of_other_organisation = Factory :active_sql_person, :active_sql_organisation => @other_organisation
+      @other_organisation = FactoryGirl.create :active_sql_organisation
+      @employee_of_other_organisation = FactoryGirl.create :active_sql_person, :active_sql_organisation => @other_organisation
       
-      @organisation = Factory :active_sql_organisation
-      @employee_1 = Factory :active_sql_person, :active_sql_organisation => @organisation
-      @employee_2 = Factory :active_sql_person, :active_sql_organisation => @organisation
-      Factory :active_sql_call_number, :number => '123456789', 
+      @organisation = FactoryGirl.create :active_sql_organisation
+      @employee_1 = FactoryGirl.create :active_sql_person, :active_sql_organisation => @organisation
+      @employee_2 = FactoryGirl.create :active_sql_person, :active_sql_organisation => @organisation
+      FactoryGirl.create :active_sql_call_number, :number => '123456789', 
         :active_sql_people => [@employee_1, @employee_2]
       
-      @employee_3 = Factory :active_sql_person, :active_sql_organisation => @organisation
-      Factory :active_sql_call_number, :number => '98754321', 
+      @employee_3 = FactoryGirl.create :active_sql_person, :active_sql_organisation => @organisation
+      FactoryGirl.create :active_sql_call_number, :number => '98754321', 
         :active_sql_people => [@employee_3]
     end
 

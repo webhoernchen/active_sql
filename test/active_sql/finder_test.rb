@@ -20,8 +20,8 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
 
     context "with call_number" do 
       setup do 
-        @call_number = Factory(:active_sql_call_number, :number => "123456")
-        @person = SpecialPerson.find(Factory(:active_sql_person).id)
+        @call_number = FactoryGirl.create(:active_sql_call_number, :number => "123456")
+        @person = SpecialPerson.find(FactoryGirl.create(:active_sql_person).id)
         @person.active_sql_call_numbers << @call_number
       end
 
@@ -32,10 +32,10 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
     
     context "Given 2 Persons with different call_numbers" do 
       setup do 
-        @call_number_1 = Factory(:active_sql_call_number, :number => "123456")
-        @call_number_2 = Factory(:active_sql_call_number, :number => "567890")
-        @person_1 = SpecialPerson.find(Factory(:active_sql_person).id)
-        @person_2 = SpecialPerson.find(Factory(:active_sql_person).id)
+        @call_number_1 = FactoryGirl.create(:active_sql_call_number, :number => "123456")
+        @call_number_2 = FactoryGirl.create(:active_sql_call_number, :number => "567890")
+        @person_1 = SpecialPerson.find(FactoryGirl.create(:active_sql_person).id)
+        @person_2 = SpecialPerson.find(FactoryGirl.create(:active_sql_person).id)
         @person_1.active_sql_call_numbers << @call_number_1
         @person_2.active_sql_call_numbers << @call_number_2
       end
@@ -85,16 +85,16 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
 
   context "ActiveSqlOrganisation.by_active_sql_order_scope by name and name of the head" do 
     setup do 
-      @organisation_siemens = Factory :active_sql_organisation, :name => 'Siemens'
-      head_of_siemens = Factory :active_sql_person, :last_name => 'Siemens',
+      @organisation_siemens = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
+      head_of_siemens = FactoryGirl.create :active_sql_person, :last_name => 'Siemens',
         :active_sql_organisation_as_head => @organisation_siemens
      ActiveRecord 
-      @organisation_siemens_2 = Factory :active_sql_organisation, :name => 'Siemens'
-      head_of_siemens_2 = Factory :active_sql_person, :last_name => 'Schuckert',
+      @organisation_siemens_2 = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
+      head_of_siemens_2 = FactoryGirl.create :active_sql_person, :last_name => 'Schuckert',
         :active_sql_organisation_as_head => @organisation_siemens_2
       
-      @organisation_other = Factory :active_sql_organisation, :name => 'Other'
-      head_of_other = Factory :active_sql_person, :last_name => 'mustermann',
+      @organisation_other = FactoryGirl.create :active_sql_organisation, :name => 'Other'
+      head_of_other = FactoryGirl.create :active_sql_person, :last_name => 'mustermann',
         :active_sql_organisation_as_head => @organisation_other
     end
 

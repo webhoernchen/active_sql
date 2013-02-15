@@ -33,11 +33,11 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlPerson.by_active_sql_order_scope with belongs_to reflection" do
     setup do 
-      organisation_datev = Factory :active_sql_organisation, :name => 'Datev'
-      organisation_siemens = Factory :active_sql_organisation, :name => 'Siemens'
+      organisation_datev = FactoryGirl.create :active_sql_organisation, :name => 'Datev'
+      organisation_siemens = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
 
-      @employee_by_datev = Factory :active_sql_person, :active_sql_organisation => organisation_datev
-      @employee_by_siemens = Factory :active_sql_person, :active_sql_organisation => organisation_siemens
+      @employee_by_datev = FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation_datev
+      @employee_by_siemens = FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation_siemens
     end
     
     context "without sort" do 
@@ -71,11 +71,11 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlNotebook.by_active_sql_order_scope with belongs_to polymorphic reflection" do
     setup do 
-      eichhorn = Factory :active_sql_person, :last_name => 'Eichhorn'
-      emrich = Factory :active_sql_person, :last_name => 'Emrich'
+      eichhorn = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn'
+      emrich = FactoryGirl.create :active_sql_person, :last_name => 'Emrich'
 
-      @notebook_paid_by_eichhorn = Factory :active_sql_notebook, :paying_partner => eichhorn
-      @notebook_paid_by_emrich = Factory :active_sql_notebook, :paying_partner => emrich
+      @notebook_paid_by_eichhorn = FactoryGirl.create :active_sql_notebook, :paying_partner => eichhorn
+      @notebook_paid_by_emrich = FactoryGirl.create :active_sql_notebook, :paying_partner => emrich
     end
     
     context "without sort" do 
@@ -109,11 +109,11 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlOrganisation.by_active_sql_order_scope with has_one reflection" do
     setup do 
-      eichhorn = Factory :active_sql_person, :last_name => 'Eichhorn'
-      emrich = Factory :active_sql_person, :last_name => 'Emrich'
+      eichhorn = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn'
+      emrich = FactoryGirl.create :active_sql_person, :last_name => 'Emrich'
 
-      @organisation_eichhorn = Factory :active_sql_organisation, :head => eichhorn
-      @organisation_emrich = Factory :active_sql_organisation, :head => emrich
+      @organisation_eichhorn = FactoryGirl.create :active_sql_organisation, :head => eichhorn
+      @organisation_emrich = FactoryGirl.create :active_sql_organisation, :head => emrich
     end
     
     context "without sort" do 
@@ -147,14 +147,14 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlPerson.by_active_sql_order_scope with has_and_belongs_to_many reflection" do
     setup do
-      call_number_0910 = Factory :active_sql_call_number, :number => '091012345'
-      call_number_0911 = Factory :active_sql_call_number, :number => '091112345'
-      call_number_0912 = Factory :active_sql_call_number, :number => '091212345'
-      call_number_0921 = Factory :active_sql_call_number, :number => '092112345'
+      call_number_0910 = FactoryGirl.create :active_sql_call_number, :number => '091012345'
+      call_number_0911 = FactoryGirl.create :active_sql_call_number, :number => '091112345'
+      call_number_0912 = FactoryGirl.create :active_sql_call_number, :number => '091212345'
+      call_number_0921 = FactoryGirl.create :active_sql_call_number, :number => '092112345'
       
-      @person_with_call_number_0911 = Factory :active_sql_person, :active_sql_call_numbers => [call_number_0911]
-      @person_with_call_number_0912 = Factory :active_sql_person, :active_sql_call_numbers => [call_number_0912]
-      @person_with_call_number_0921_and_0910 = Factory :active_sql_person, :active_sql_call_numbers => [call_number_0921, call_number_0910]
+      @person_with_call_number_0911 = FactoryGirl.create :active_sql_person, :active_sql_call_numbers => [call_number_0911]
+      @person_with_call_number_0912 = FactoryGirl.create :active_sql_person, :active_sql_call_numbers => [call_number_0912]
+      @person_with_call_number_0921_and_0910 = FactoryGirl.create :active_sql_person, :active_sql_call_numbers => [call_number_0921, call_number_0910]
     end
     
     context "without sort" do 
@@ -216,11 +216,11 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlOrganisation.by_active_sql_order_scope with has_many reflection" do
     setup do
-      employee_eichhorn = Factory :active_sql_person, :last_name => 'Eichhorn'
-      employee_emrich = Factory :active_sql_person, :last_name => 'Emrich'
+      employee_eichhorn = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn'
+      employee_emrich = FactoryGirl.create :active_sql_person, :last_name => 'Emrich'
     
-      @organisation_with_employee_eichhorn = Factory :active_sql_organisation, :employees => [employee_eichhorn]
-      @organisation_with_employee_emrich = Factory :active_sql_organisation, :employees => [employee_emrich]
+      @organisation_with_employee_eichhorn = FactoryGirl.create :active_sql_organisation, :employees => [employee_eichhorn]
+      @organisation_with_employee_emrich = FactoryGirl.create :active_sql_organisation, :employees => [employee_emrich]
     end
 
     context "without sort" do 
@@ -254,12 +254,12 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlPerson.by_active_sql_order_scope with has_many through belongs_to reflection" do
     setup do
-      organisation_1 = Factory :active_sql_organisation
-      organisation_2 = Factory :active_sql_organisation
+      organisation_1 = FactoryGirl.create :active_sql_organisation
+      organisation_2 = FactoryGirl.create :active_sql_organisation
       
-      @eichhorn = Factory :active_sql_person, :last_name => 'Eichhorn', :active_sql_organisation => organisation_1
-      @emrich = Factory :active_sql_person, :last_name => 'Emrich', :active_sql_organisation => organisation_2
-      @schad = Factory :active_sql_person, :last_name => 'Schad', :active_sql_organisation => organisation_1
+      @eichhorn = FactoryGirl.create :active_sql_person, :last_name => 'Eichhorn', :active_sql_organisation => organisation_1
+      @emrich = FactoryGirl.create :active_sql_person, :last_name => 'Emrich', :active_sql_organisation => organisation_2
+      @schad = FactoryGirl.create :active_sql_person, :last_name => 'Schad', :active_sql_organisation => organisation_1
     end
 
     context "without sort" do 
@@ -293,15 +293,15 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlOrganisation.by_active_sql_order_scope with has_many through has_many reflection" do
     setup do
-      notebook_with_number_12345 = Factory :active_sql_notebook, :number => '12345'
-      @organisation_with_employee_with_notebook_number_12345 = Factory :active_sql_organisation
-      employee_with_notebook_number_12345 = Factory :active_sql_person, 
+      notebook_with_number_12345 = FactoryGirl.create :active_sql_notebook, :number => '12345'
+      @organisation_with_employee_with_notebook_number_12345 = FactoryGirl.create :active_sql_organisation
+      employee_with_notebook_number_12345 = FactoryGirl.create :active_sql_person, 
         :active_sql_notebook => notebook_with_number_12345, 
         :active_sql_organisation => @organisation_with_employee_with_notebook_number_12345
       
-      notebook_with_number_54321 = Factory :active_sql_notebook, :number => '54321'
-      @organisation_with_employee_with_notebook_number_54321 = Factory :active_sql_organisation
-      employee_with_notebook_number_54321 = Factory :active_sql_person, 
+      notebook_with_number_54321 = FactoryGirl.create :active_sql_notebook, :number => '54321'
+      @organisation_with_employee_with_notebook_number_54321 = FactoryGirl.create :active_sql_organisation
+      employee_with_notebook_number_54321 = FactoryGirl.create :active_sql_person, 
         :active_sql_notebook => notebook_with_number_54321, 
         :active_sql_organisation => @organisation_with_employee_with_notebook_number_54321
     end
@@ -341,12 +341,12 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlPerson.by_active_sql_order_scope with has_many through polymorphic reflection" do
     setup do
-      @employee_with_notebook_number_12345 = Factory :active_sql_person
-      notebook_with_number_12345 = Factory :active_sql_notebook, :number => '12345', 
+      @employee_with_notebook_number_12345 = FactoryGirl.create :active_sql_person
+      notebook_with_number_12345 = FactoryGirl.create :active_sql_notebook, :number => '12345', 
         :paying_partner => @employee_with_notebook_number_12345
       
-      @employee_with_notebook_number_54321 = Factory :active_sql_person
-      notebook_with_number_54321 = Factory :active_sql_notebook, :number => '54321',
+      @employee_with_notebook_number_54321 = FactoryGirl.create :active_sql_person
+      notebook_with_number_54321 = FactoryGirl.create :active_sql_notebook, :number => '54321',
         :paying_partner => @employee_with_notebook_number_54321
     end
 
@@ -385,16 +385,16 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlPerson.by_active_sql_order_scope with has_one and belongs_to parent reflection" do
     setup do
-      organisation_1 = Factory :active_sql_organisation
-      head_1 = Factory :active_sql_person, :first_name => 'Christian', 
+      organisation_1 = FactoryGirl.create :active_sql_organisation
+      head_1 = FactoryGirl.create :active_sql_person, :first_name => 'Christian', 
         :active_sql_organisation_as_head => organisation_1
-      @employee_with_head_christian = Factory :active_sql_person, 
+      @employee_with_head_christian = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => organisation_1
       
-      organisation_2 = Factory :active_sql_organisation
-      head_2 = Factory :active_sql_person, :first_name => 'Martina', 
+      organisation_2 = FactoryGirl.create :active_sql_organisation
+      head_2 = FactoryGirl.create :active_sql_person, :first_name => 'Martina', 
         :active_sql_organisation_as_head => organisation_2
-      @employee_with_head_martina = Factory :active_sql_person, 
+      @employee_with_head_martina = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => organisation_2
     end
     
@@ -433,16 +433,16 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlNotebook.by_active_sql_order_scope with belongs_to and belongs_to parent reflection" do
     setup do
-      organisation_siemens = Factory :active_sql_organisation, :name => 'Siemens'
-      employee_by_siemens = Factory :active_sql_person, 
+      organisation_siemens = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
+      employee_by_siemens = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => organisation_siemens
-      @notebook_of_siemens = Factory :active_sql_notebook, 
+      @notebook_of_siemens = FactoryGirl.create :active_sql_notebook, 
         :active_sql_person => employee_by_siemens
       
-      organisation_datev = Factory :active_sql_organisation, :name => 'Datev'
-      employee_by_datev = Factory :active_sql_person, 
+      organisation_datev = FactoryGirl.create :active_sql_organisation, :name => 'Datev'
+      employee_by_datev = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => organisation_datev
-      @notebook_of_datev = Factory :active_sql_notebook, 
+      @notebook_of_datev = FactoryGirl.create :active_sql_notebook, 
         :active_sql_person => employee_by_datev
     end
     
@@ -477,16 +477,16 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlOrganisation.by_active_sql_order_scope with has_many and has_and_belongs_to_many parent reflection" do
     setup do
-      @organisation_with_callnumber_123456 = Factory :active_sql_organisation
-      employee_by_organisation_with_call_number_123456 = Factory :active_sql_person, 
+      @organisation_with_callnumber_123456 = FactoryGirl.create :active_sql_organisation
+      employee_by_organisation_with_call_number_123456 = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => @organisation_with_callnumber_123456
-      call_number_1 = Factory :active_sql_call_number, :number => '1234567',
+      call_number_1 = FactoryGirl.create :active_sql_call_number, :number => '1234567',
         :active_sql_people => [employee_by_organisation_with_call_number_123456]
       
-      @organisation_with_callnumber_654321 = Factory :active_sql_organisation
-      employee_by_organisation_with_call_number_654321 = Factory :active_sql_person, 
+      @organisation_with_callnumber_654321 = FactoryGirl.create :active_sql_organisation
+      employee_by_organisation_with_call_number_654321 = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => @organisation_with_callnumber_654321
-      call_number_2 = Factory :active_sql_call_number, :number => '6543217',
+      call_number_2 = FactoryGirl.create :active_sql_call_number, :number => '6543217',
         :active_sql_people => [employee_by_organisation_with_call_number_654321]
     end
     
@@ -523,16 +523,16 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlOrganisation.by_active_sql_order_scope with has_many and has_many parent reflection" do
     setup do
-      @organisation_1 = Factory :active_sql_organisation
-      employee_by_organisation_1 = Factory :active_sql_person, 
+      @organisation_1 = FactoryGirl.create :active_sql_organisation
+      employee_by_organisation_1 = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => @organisation_1
-      notebook_1 = Factory :active_sql_notebook, :number => '1234567',
+      notebook_1 = FactoryGirl.create :active_sql_notebook, :number => '1234567',
         :paying_partner => employee_by_organisation_1
       
-      @organisation_2 = Factory :active_sql_organisation
-      employee_by_organisation_2 = Factory :active_sql_person, 
+      @organisation_2 = FactoryGirl.create :active_sql_organisation
+      employee_by_organisation_2 = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => @organisation_2
-      notebook_2 = Factory :active_sql_notebook, :number => '7654321',
+      notebook_2 = FactoryGirl.create :active_sql_notebook, :number => '7654321',
         :paying_partner => employee_by_organisation_2
     end
     
@@ -567,16 +567,16 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
   
   context "ActiveSqlOrganisation.by_active_sql_order_scope" do
     setup do
-      @organisation_1 = Factory :active_sql_organisation
-      employee_by_organisation_1 = Factory :active_sql_person, 
+      @organisation_1 = FactoryGirl.create :active_sql_organisation
+      employee_by_organisation_1 = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => @organisation_1
-      notebook_1 = Factory :active_sql_notebook, :number => '1234567',
+      notebook_1 = FactoryGirl.create :active_sql_notebook, :number => '1234567',
         :paying_partner => employee_by_organisation_1
       
-      @organisation_2 = Factory :active_sql_organisation
-      employee_by_organisation_2 = Factory :active_sql_person, 
+      @organisation_2 = FactoryGirl.create :active_sql_organisation
+      employee_by_organisation_2 = FactoryGirl.create :active_sql_person, 
         :active_sql_organisation => @organisation_2
-      notebook_2 = Factory :active_sql_notebook, :number => '7654321',
+      notebook_2 = FactoryGirl.create :active_sql_notebook, :number => '7654321',
         :paying_partner => employee_by_organisation_2
     end
 
