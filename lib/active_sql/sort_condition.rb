@@ -145,7 +145,7 @@ module ActiveSql
     end
     
     def primary_key_name
-      reflection.primary_key_name
+      reflection.respond_to?(:foreign_key) ? reflection.foreign_key : reflection.primary_key_name
     end
     
     def join_table
@@ -456,7 +456,10 @@ module ActiveSql
     #
     # sub method for sql_by_has_many_reflection
     def sql_by_has_many_through_belongs_to_reflection
-      sql = "#{quoted_table_name}.#{reflection.through_reflection.primary_key_name} " + 
+      refl = reflection.through_reflection
+      through_primary_key = refl.respond_to?(:foreign_key) ? refl.foreign_key : refl.primary_key_name
+
+      sql = "#{quoted_table_name}.#{through_primary_key} " + 
         "IN (SELECT #{quoted_join_table}.#{child.klass.primary_key} " + 
           "FROM #{join_table} #{quoted_join_table} " + 
           "WHERE #{quoted_join_table}.#{child.klass.primary_key}"
@@ -466,7 +469,7 @@ module ActiveSql
           "FROM #{parent.table_name} #{parent.quoted_table_name} " +
           "WHERE #{sql_conditions_sum}))"
       else
-        "#{sql} IN (#{parent.quoted_table_name}.#{reflection.through_reflection.primary_key_name}))"
+        "#{sql} IN (#{parent.quoted_table_name}.#{through_primary_key}))"
       end
     end
     

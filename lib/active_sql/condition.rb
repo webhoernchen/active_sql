@@ -394,7 +394,8 @@ module ActiveSql
     end
     
     def primary_key_name
-      (reflection.source_reflection || reflection.through_reflection || reflection).primary_key_name 
+      refl = (reflection.source_reflection || reflection.through_reflection || reflection)
+      refl.respond_to?(:foreign_key) ? refl.foreign_key : refl.primary_key_name 
     end
     
     def join_table
@@ -725,9 +726,6 @@ module ActiveSql
     # has many through is a has and belongs to many reflection
     # and this sql_string are returned
     def sql_by_has_many_through_has_many_reflection
-#      association_foreign_key = reflection.source_reflection && reflection.source_reflection.primary_key
-      primary_key_name = reflection.through_reflection && reflection.through_reflection.primary_key_name
-      
       "#{quoted_parent_table_name}.#{parent_primary_key} " + \
         "IN (SELECT #{quoted_join_table}.#{primary_key_name} " + \
           "FROM #{join_table} #{quoted_join_table} WHERE #{quoted_join_table}.#{association_foreign_key} " + \
@@ -737,8 +735,8 @@ module ActiveSql
     def sql_by_has_many_through_belongs_to_reflection
       "#{quoted_parent_table_name}.#{primary_key_name} " + \
         "IN (SELECT #{quoted_join_table}.#{parent_primary_key} " + \
-          "FROM #{join_table} #{quoted_join_table} WHERE #{quoted_join_table}.#{klass.primary_key} " + \
-          "IN (SELECT #{quoted_table_name}.#{reflection.through_reflection.primary_key_name} FROM #{table_name} #{quoted_table_name} WHERE #{sql_conditions_sum}))"
+          "FROM #{join_table} #{quoted_join_table} WHERE #{quoted_join_table}.#{primary_key} " + \
+          "IN (SELECT #{quoted_table_name}.#{primary_key_name} FROM #{table_name} #{quoted_table_name} WHERE #{sql_conditions_sum}))"
     end
     
     # returns an reflection sql for a 
