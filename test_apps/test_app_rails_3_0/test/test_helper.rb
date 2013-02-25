@@ -8,5 +8,5 @@ Dir[File.expand_path(File.dirname(__FILE__) + "/../../../test/**/*_test.rb")].so
   require model
 end
 
-class ActiveSupport::TestCase
-end
+#class ActiveSupport::TestCase
+#end
