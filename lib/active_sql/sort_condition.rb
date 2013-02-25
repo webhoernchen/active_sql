@@ -480,10 +480,16 @@ module ActiveSql
     #
     # sub method for sql_by_has_many_reflection
     def sql_by_has_many_through_has_many_reflection
+      primary_key_name = if through_reflection.respond_to?(:foreign_key)
+        through_reflection.foreign_key
+      else 
+        through_reflection.primary_key_name
+      end
+
       sql = "#{quoted_table_name}.#{child.klass.primary_key} " + 
         "IN (SELECT #{quoted_join_table}.#{association_foreign_key} " + 
           "FROM #{join_table} #{quoted_join_table} " + 
-          "WHERE #{quoted_join_table}.#{through_reflection.primary_key_name}"
+          "WHERE #{quoted_join_table}.#{primary_key_name}"
 
       if parent && parent.parent
         "#{sql} IN (SELECT #{parent.quoted_table_name}.id " +

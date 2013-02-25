@@ -394,7 +394,11 @@ module ActiveSql
     end
     
     def primary_key_name
-      refl = (reflection.source_reflection || reflection.through_reflection || reflection)
+      refl = if reflection.through_reflection && reflection.through_reflection.macro != :belongs_to
+        reflection.through_reflection
+      else
+        reflection.source_reflection || reflection.through_reflection || reflection
+      end
       refl.respond_to?(:foreign_key) ? refl.foreign_key : refl.primary_key_name 
     end
     
@@ -407,7 +411,7 @@ module ActiveSql
     end
     
     def association_foreign_key
-      reflection.association_foreign_key
+      reflection.association_foreign_key 
     end
     
     # each condition has an own index to identify the condition for later use
