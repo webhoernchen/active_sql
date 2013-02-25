@@ -6,9 +6,7 @@ require File.expand_path(File.dirname(__FILE__) + "/factories")
 require File.expand_path(File.dirname(__FILE__) + "/shoulda_macros")
 require File.expand_path(File.dirname(__FILE__) + "/test_tables")
 
-Dir.glob(File.expand_path(File.dirname(__FILE__) + "/models/*.rb")).sort.each do |file|
-  require file.gsub(".rb", "")
-end
+Dir.glob(File.expand_path(File.dirname(__FILE__) + "/models/*.rb")).sort.each {|file| require file.gsub(".rb", "") }
 
 module ActiveSqlTestCase
 

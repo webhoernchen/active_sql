@@ -15,7 +15,7 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
 
   context "SpecialPerson" do 
     should "has scope :with_number" do 
-      assert SpecialPerson.scopes.keys.include?(:with_number)
+      assert SpecialPerson.respond_to?(:with_number)
     end
 
     context "with call_number" do 
