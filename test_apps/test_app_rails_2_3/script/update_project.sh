@@ -18,7 +18,7 @@ rvm use $LATEST_REMOTE_RUBY_VERSION --default
 echo $LATEST_REMOTE_RUBY_VERSION > RUBY_VERSION
 
 # rubygems
-gem update --system
+#gem update --system
 gem --version > GEM_VERSION
 
 # bundler
