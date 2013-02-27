@@ -872,4 +872,26 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       end
     end
   end
+
+  context "Given a has_many through reflection with specific foreign_keys" do 
+    subject do 
+      cond = ActiveSql::Condition.new( :klass => BlogUser )
+      cond.blog_posts
+    end
+
+    should "return the specfic foreign_key of the through_reflection on #association_foreign_key" do 
+      assert_equal 'post_id', subject.send(:association_foreign_key)
+    end
+  end
+
+  context "Given a has_many through reflection with specific foreign_keys for reverse" do 
+    subject do 
+      cond = ActiveSql::Condition.new( :klass => BlogPost )
+      cond.blog_users
+    end
+
+    should "return the specfic foreign_key of the through_reflection on #association_foreign_key" do 
+      assert_equal 'user_id', subject.send(:association_foreign_key)
+    end
+  end
 end
