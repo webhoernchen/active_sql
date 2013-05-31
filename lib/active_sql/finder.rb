@@ -157,7 +157,13 @@ module ActiveSql::Finder
     sql_join = args.delete(:sql_join)
     active_sql_condition = ActiveSql::Condition.new({:klass => self, :sql_join => sql_join})
     yield active_sql_condition
-    active_sql_condition.to_record_conditions
+    cond = active_sql_condition.to_record_conditions
+    
+    if cond.size > 1
+      cond
+    else
+      cond.first
+    end
   end
   alias generate_conditions_for_record generate_conditions_for_records
   

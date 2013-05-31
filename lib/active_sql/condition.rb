@@ -326,9 +326,22 @@ module ActiveSql
     # end
     alias condition_for method_missing
 
+    def by_scope(scope)
+      raise 'no scope given' unless scope.respond_to?(:current_scoped_methods)
+      scoped_methods = scope.current_scoped_methods
+      find_scope_conditions = scoped_methods[:find] || {}
+      find_conditions = find_scope_conditions[:conditions] || {}
+
+      sql = klass.send(:sanitize_sql, find_conditions)
+      sql = sql.gsub(table_name, quoted_table_name)
+      
+      self.condition_methods << sql
+    end
+
     def by_custom_column(sql)
       index = ['custom_sql', object_id].join('__')
       sql = sql.gsub(table_name, quoted_table_name)
+      sql = klass.send(:sanitize_sql, sql)
       childs_hash[index] = self.class.new({:klass => self.klass, :parent => self, 
         :table_column_sql => sql, :condition_index => condition_index, :sql_join => sql_join})
     end
