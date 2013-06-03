@@ -473,11 +473,25 @@ module ActiveSql
     end
     
     private
+    def merge_conditions(*conditions)
+      conditions = conditions.flatten
+
+      conditions = conditions.collect do |condition|
+        unless condition.blank?
+          sql = klass.send(:sanitize_sql, condition)
+        end
+      end
+
+      conditions.delete_if(&:blank?)
+
+      "(#{conditions.join(') AND (')})"
+    end
+
     def by_active_record_relation(relation)
       if (where_values = relation.where_values).blank?
         by_empty_scope_or_relation
       else
-        sql = klass.send(:sanitize_sql, where_values)
+        sql = merge_conditions where_values
         sql.to_s.gsub(table_name, quoted_table_name)
       end
     end

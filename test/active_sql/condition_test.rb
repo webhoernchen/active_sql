@@ -953,17 +953,25 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
         @organisation_without_employees = FactoryGirl.create :active_sql_organisation
         @organisation_with_employee__test_name = FactoryGirl.create :active_sql_organisation
         @organisation_with_employee__max = FactoryGirl.create :active_sql_organisation
+        @organisation_with_employee__hans = FactoryGirl.create :active_sql_organisation
 
         FactoryGirl.create :active_sql_person, :last_name => 'Test-Name', 
           :active_sql_organisation => @organisation_with_employee__test_name
 
-        FactoryGirl.create :active_sql_person, :last_name => 'Max', 
+        FactoryGirl.create :active_sql_person, :last_name => 'Mustermann', :first_name => 'Max',
           :active_sql_organisation => @organisation_with_employee__max
+        
+          FactoryGirl.create :active_sql_person, :last_name => 'Mustermann', :first_name => 'Hans',
+          :active_sql_organisation => @organisation_with_employee__hans
       end
 
       subject do 
         scope = ActiveSqlPerson.by_active_sql_condition_scope do |person|
-          person.last_name == 'Max'
+          person.last_name == 'Mustermann'
+        end
+
+        scope = scope.by_active_sql_condition_scope do |person|
+          person.first_name == 'Max'
         end
 
         ActiveSqlOrganisation.by_active_sql_condition_scope do |organisation|
@@ -983,6 +991,9 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
         assert !subject.include?(@organisation_with_employee__test_name)
       end
 
+      should "not find organisation_with_employee__test_name" do 
+        assert !subject.include?(@organisation_with_employee__hans)
+      end
 
       should "not find organisation_without_employees" do 
         assert !subject.include?(@organisation_without_employees)
