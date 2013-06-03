@@ -88,7 +88,6 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
       @organisation_siemens = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
       head_of_siemens = FactoryGirl.create :active_sql_person, :last_name => 'Siemens',
         :active_sql_organisation_as_head => @organisation_siemens
-     ActiveRecord 
       @organisation_siemens_2 = FactoryGirl.create :active_sql_organisation, :name => 'Siemens'
       head_of_siemens_2 = FactoryGirl.create :active_sql_person, :last_name => 'Schuckert',
         :active_sql_organisation_as_head => @organisation_siemens_2
