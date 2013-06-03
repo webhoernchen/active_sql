@@ -66,6 +66,7 @@ module ActiveSql
   class TypeError < StandardError; end
   class SqlJoinError < StandardError; end
   class PolymorphicError < StandardError; end
+  class ScopeError < StandardError; end
 
   class Condition
     
@@ -327,13 +328,15 @@ module ActiveSql
     alias condition_for method_missing
 
     def by_scope(scope)
-      raise 'no scope given' unless scope.respond_to?(:current_scoped_methods)
-      scoped_methods = scope.current_scoped_methods
-      find_scope_conditions = scoped_methods[:find] || {}
-      find_conditions = find_scope_conditions[:conditions] || {}
+      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:scoped)
 
-      sql = klass.send(:sanitize_sql, find_conditions)
-      sql = sql.gsub(table_name, quoted_table_name)
+      wrapped_scope = scope.scoped({})
+
+      sql = if wrapped_scope.respond_to?(:where_values)
+        by_active_record_relation wrapped_scope
+      elsif wrapped_scope.respond_to?(:current_scoped_methods)
+        by_active_record_scope wrapped_scope
+      end
       
       self.condition_methods << sql
     end
@@ -470,6 +473,32 @@ module ActiveSql
     end
     
     private
+    def by_active_record_relation(relation)
+      if (where_values = relation.where_values).blank?
+        by_empty_scope_or_relation
+      else
+        sql = klass.send(:sanitize_sql, where_values)
+        sql.to_s.gsub(table_name, quoted_table_name)
+      end
+    end
+
+    def by_active_record_scope(scope)
+      scoped_methods = scope.send(:current_scoped_methods)
+
+      if (find_scope_conditions = scoped_methods[:find] || {}).blank?
+        by_empty_scope_or_relation
+      else
+        find_conditions = find_scope_conditions[:conditions] || {}
+
+        sql = klass.send(:sanitize_sql, find_conditions)
+        sql.to_s.gsub(table_name, quoted_table_name)
+      end
+    end
+
+    def by_empty_scope_or_relation
+      "#{quoted_table_name}.#{primary_key} = #{quoted_table_name}.#{primary_key}"
+    end
+
     def calculation(type, options, &block)
       options = {:quoted_table_name => quoted_table_name, :klass => klass}.merge(options)
 

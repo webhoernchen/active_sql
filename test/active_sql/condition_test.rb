@@ -894,4 +894,99 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
       assert_equal 'user_id', subject.send(:association_foreign_key)
     end
   end
+
+  context "Given a by_scope condition" do 
+    context "with nil" do 
+      subject do 
+        ActiveSqlOrganisation.by_active_sql_condition_scope do |organisation|
+          organisation.employees.by_scope nil
+        end
+      end
+
+      should "raise an error" do 
+        assert_raise(ActiveSql::ScopeError) { subject }
+      end
+    end
+    
+    context "with an other object" do 
+      subject do 
+        ActiveSqlOrganisation.by_active_sql_condition_scope do |organisation|
+          organisation.employees.by_scope ActiveSqlPerson.new
+        end
+      end
+
+      should "raise an error" do 
+        assert_raise(ActiveSql::ScopeError) { subject }
+      end
+    end
+    
+    context "for an Model-Class" do
+      setup do 
+        @organisation_without_employees = FactoryGirl.create :active_sql_organisation
+        @organisation_with_employees = FactoryGirl.create :active_sql_organisation
+
+        FactoryGirl.create :active_sql_person, :last_name => 'Test-Name', 
+          :active_sql_organisation => @organisation_with_employees
+      end
+
+      subject do 
+        ActiveSqlOrganisation.by_active_sql_condition_scope do |organisation|
+          organisation.employees.by_scope ActiveSqlPerson
+        end
+      end
+
+      should "not raise an error" do 
+        assert_nothing_raised { subject }
+      end
+
+      should "find organisation_with_employees" do 
+        assert subject.include? @organisation_with_employees
+      end
+
+      should "not find organisation_without_employees" do 
+        assert !subject.include?(@organisation_without_employees)
+      end
+    end
+    
+    context "for a scope" do
+      setup do 
+        @organisation_without_employees = FactoryGirl.create :active_sql_organisation
+        @organisation_with_employee__test_name = FactoryGirl.create :active_sql_organisation
+        @organisation_with_employee__max = FactoryGirl.create :active_sql_organisation
+
+        FactoryGirl.create :active_sql_person, :last_name => 'Test-Name', 
+          :active_sql_organisation => @organisation_with_employee__test_name
+
+        FactoryGirl.create :active_sql_person, :last_name => 'Max', 
+          :active_sql_organisation => @organisation_with_employee__max
+      end
+
+      subject do 
+        scope = ActiveSqlPerson.by_active_sql_condition_scope do |person|
+          person.last_name == 'Max'
+        end
+
+        ActiveSqlOrganisation.by_active_sql_condition_scope do |organisation|
+          organisation.employees.by_scope scope
+        end
+      end
+
+      should "not raise an error" do 
+        assert_nothing_raised { subject }
+      end
+
+      should "find organisation_with_employee__max" do 
+        assert subject.include? @organisation_with_employee__max
+      end
+
+      should "not find organisation_with_employee__test_name" do 
+        assert !subject.include?(@organisation_with_employee__test_name)
+      end
+
+
+      should "not find organisation_without_employees" do 
+        assert !subject.include?(@organisation_without_employees)
+      end
+    end
+  end
 end
