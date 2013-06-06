@@ -264,18 +264,33 @@ module ActiveSql
     
     # merge the sql condition strings from the parents
     # the reflection_condition and the type_condition for sti are included, too
+    def where_conditions_sum
+      where_conditions = []
+
+      where_conditions << parent.send(:reflection_condition)
+      where_conditions << type_condition_for_sti
+      where_conditions << condition_sql
+
+      where_conditions.compact!
+      unless where_conditions.empty?
+        "(#{where_conditions.join(') AND (')})"
+      end
+    end
+    
+    # merge the sql condition strings from the parents
+    # the reflection_condition and the type_condition for sti are included, too
+    def and_where_conditions_sum
+      if sql = where_conditions_sum
+        " AND (#{sql})"
+      end
+    end
+
+    # merge the sql condition strings from the parents
+    # the reflection_condition and the type_condition for sti are included, too
     def sql_conditions_sum
       sql = parent.to_sort_condition
 
-      if sql_affix = parent.send(:reflection_condition)
-        sql = "(#{sql}) AND #{sql_affix}"
-      end
-
-      if sql_affix = type_condition_for_sti
-        sql = "(#{sql}) AND #{sql_affix}"
-      end
-
-      if sql_affix = condition_sql
+      if sql_affix = where_conditions_sum
         sql = "(#{sql}) AND #{sql_affix}"
       end
 
@@ -389,7 +404,7 @@ module ActiveSql
     end
 
     def sql_part_for_belongs_to_reflection_without_parent_reflection
-      "(#{parent.quoted_table_name}.#{primary_key_name})"
+      "(#{parent.quoted_table_name}.#{primary_key_name}) #{and_where_conditions_sum}"
     end
     
     # returns an reflection sql for a 
@@ -407,7 +422,7 @@ module ActiveSql
           "FROM #{parent.table_name} #{parent.quoted_table_name} " +
           "WHERE #{sql_conditions_sum}))"
       else
-        "#{sql} IN (#{parent.quoted_table_name}.#{parent_klass.primary_key}))"
+        "#{sql} IN (#{parent.quoted_table_name}.#{parent_klass.primary_key})) #{and_where_conditions_sum}"
       end
     end
     
@@ -445,7 +460,7 @@ module ActiveSql
           "FROM #{parent.table_name} #{parent.quoted_table_name} WHERE #{sql_conditions_sum})"
       else
         "#{quoted_table_name}.#{primary_key_name} " +
-          "IN (#{parent.quoted_table_name}.#{parent_klass.primary_key})"
+          "IN (#{parent.quoted_table_name}.#{parent_klass.primary_key}) #{and_where_conditions_sum}"
       end
     end
     
@@ -469,7 +484,7 @@ module ActiveSql
           "FROM #{parent.table_name} #{parent.quoted_table_name} " +
           "WHERE #{sql_conditions_sum}))"
       else
-        "#{sql} IN (#{parent.quoted_table_name}.#{through_primary_key}))"
+        "#{sql} IN (#{parent.quoted_table_name}.#{through_primary_key})) #{and_where_conditions_sum}"
       end
     end
     
@@ -496,7 +511,7 @@ module ActiveSql
           "FROM #{parent.table_name} #{parent.quoted_table_name} " +
           "WHERE #{sql_conditions_sum}))"
       else
-        "#{sql} IN (#{parent.quoted_table_name}.#{child.klass.primary_key}))"
+        "#{sql} IN (#{parent.quoted_table_name}.#{child.klass.primary_key})) #{and_where_conditions_sum}"
       end
     end
     
@@ -514,7 +529,7 @@ module ActiveSql
         "#{sql} (SELECT #{parent.quoted_table_name}.#{klass.primary_key} " + \
           "FROM #{parent.table_name} #{parent.quoted_table_name} WHERE #{sql_conditions_sum})"
       else
-        "#{sql} (#{parent.quoted_table_name}.#{parent_klass.primary_key})"
+        "#{sql} (#{parent.quoted_table_name}.#{parent_klass.primary_key}) #{and_where_conditions_sum}"
       end
     end
     
