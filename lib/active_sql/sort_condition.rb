@@ -27,7 +27,7 @@ module ActiveSql
     
     DEFAULT_LIMIT = 1
 
-    VALID_SORTS = ['ASC', 'DESC']
+    VALID_SORTS = ['ASC', 'DESC', 'IS NULL']
     
     # All Attributes are protected
     # because it is not needed to change this attributes outside this class
