@@ -124,6 +124,7 @@ module ActiveSql
     alias start_not_with starts_not_with
     alias begin_not_with starts_not_with
     alias begins_not_with starts_not_with
+    alias not_begin_with starts_not_with
     
     # the value of the column ends with this +text+
     def ends_with(text)
@@ -135,12 +136,17 @@ module ActiveSql
       where_like(text)
     end
     alias match like
+
+    def not_like(text)
+      where_not_like(text)
+    end
     
     # the value of the column ends with this +text+
     def ends_not_with(text)
       where_not_like("%#{text}")
     end
     alias end_not_with ends_not_with
+    alias not_end_with ends_not_with
 
     def included_in(sql_string)
       where("IN (SELECT (#{sql_string}))", [])
@@ -197,6 +203,7 @@ module ActiveSql
     end
     alias equals_not is_not_equal
     alias is_not is_not_equal
+    alias does_not_equal is_not_equal
 
     def is_nil
       is nil
@@ -247,6 +254,7 @@ module ActiveSql
       where('>= ?', value)
     end
     alias >= greater_than_or_equal
+    alias greater_than_or_equal_to greater_than_or_equal
     
     # the value of the column is lower than or equal +value+
     def lower_than_or_equal(value)
@@ -254,6 +262,7 @@ module ActiveSql
     end
     alias <= lower_than_or_equal
     alias less_than_or_equal lower_than_or_equal
+    alias less_than_or_equal_to lower_than_or_equal
     
     # the value of the column is between +value+, +value+
     def between(*values)
