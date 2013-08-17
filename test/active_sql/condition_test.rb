@@ -991,7 +991,7 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
         assert !subject.include?(@organisation_with_employee__test_name)
       end
 
-      should "not find organisation_with_employee__test_name" do 
+      should "not find organisation_with_employee__test_hans" do 
         assert !subject.include?(@organisation_with_employee__hans)
       end
 
