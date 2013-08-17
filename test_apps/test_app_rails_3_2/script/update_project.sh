@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rvm get stable
+rvm get stable --auto-dotfiles
 rvm reload
 rvm --version | awk '{print $2}' | grep [0-9] > RVM_VERSION
 

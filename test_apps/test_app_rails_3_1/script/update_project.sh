@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rvm get stable
+rvm get stable --auto-dotfiles
 rvm reload
 rvm --version | awk '{print $2}' | grep [0-9] > RVM_VERSION
 
@@ -9,7 +9,7 @@ LATEST_REMOTE_RUBY_VERSION=$(rvm list known strings | grep "1.9.3" | sed "s/\[//
 
 if [[ $(rvm list strings | grep $LATEST_REMOTE_RUBY_VERSION) == '' ]]
 then
-  rvm install $LATEST_REMOTE_RUBY_VERSION && source ~/.bash_profile && rvm use $LATEST_REMOTE_RUBY_VERSION && gem install bundler
+  rvm install $LATEST_REMOTE_RUBY_VERSION --disable-binary && source ~/.bash_profile && rvm use $LATEST_REMOTE_RUBY_VERSION && gem install bundler
 fi
 
 source ~/.bash_profile
