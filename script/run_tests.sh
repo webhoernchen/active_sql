@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.bash_profile
+source "$HOME/.rvm/scripts/rvm"
 
 local_folder=$(pwd)
 RESULT=0
