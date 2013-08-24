@@ -13,7 +13,7 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
 
       should 'return sort condition' do
         assert_equal "active_sql_people.first_name", subject
-        assert_nothing_raised { ActiveSqlPerson.find(:all, :order => subject) }
+        assert_nothing_raised { ActiveSqlPerson.order_or_scoped(subject).to_a }
       end
     end
     
@@ -26,7 +26,7 @@ class ActiveSql::SortConditionTest < ActiveSupport::TestCase
 
       should 'return sort condition with sort' do
         assert_equal "active_sql_people.first_name ASC", subject
-        assert_nothing_raised { ActiveSqlPerson.find(:all, :order => subject) }
+        assert_nothing_raised { ActiveSqlPerson.order_or_scoped(subject).to_a }
       end
     end
   end

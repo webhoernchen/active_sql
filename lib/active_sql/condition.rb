@@ -339,7 +339,7 @@ module ActiveSql
     def by_scope(scope)
       raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:scoped)
 
-      wrapped_scope = scope.scoped({})
+      wrapped_scope = scope.where_or_scoped({})
 
       sql = if wrapped_scope.respond_to?(:where_values)
         by_active_record_relation wrapped_scope
@@ -487,7 +487,7 @@ module ActiveSql
 
       conditions = conditions.collect do |condition|
         unless condition.blank?
-          sql = klass.send(:sanitize_sql, condition)
+          klass.send(:sanitize_sql, condition)
         end
       end
 

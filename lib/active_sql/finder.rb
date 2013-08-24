@@ -26,7 +26,7 @@ module ActiveSql::Finder
       conditions = generate_conditions_for_records(options) do |active_sql_condition|
         yield active_sql_condition, *args
       end
-      {:conditions => conditions}
+      where_or_scoped conditions
     end)
   end
 
@@ -54,7 +54,7 @@ module ActiveSql::Finder
       order = generate_sort_condition do |active_sql_sort_condition|
         yield active_sql_sort_condition, *args
       end
-      {:order => order}
+      order_or_scoped order
     end)
   end
 
@@ -74,7 +74,7 @@ module ActiveSql::Finder
     conditions = generate_conditions_for_records(options) do |active_sql_condition|
       yield active_sql_condition
     end
-    scoped({:conditions => conditions})
+    where_or_scoped conditions
   end
   
   # Generates an order scope for the model class on demand.
@@ -90,10 +90,10 @@ module ActiveSql::Finder
   # or
   # records = scope.other_scope.all
   def by_active_sql_order_scope(&block)
-    order = generate_sort_condition do |active_sql_sort_condition|
+    sort_condition = generate_sort_condition do |active_sql_sort_condition|
       yield active_sql_sort_condition
     end
-    scoped({:order => order})
+    order_or_scoped sort_condition
   end
   
   # find a record
@@ -189,5 +189,33 @@ module ActiveSql::Finder
     else
       @cached_responds_to_scope
     end
+  end
+
+  def where_or_scoped(conditions)
+    if respond_to_where?
+      where conditions
+    else
+      scoped :conditions => conditions
+    end
+  end
+
+  def order_or_scoped(conditions)
+    if respond_to_order?
+      order conditions
+    else
+      scoped :conditions => conditions
+    end
+  end
+
+  def respond_to_where?
+    if @cached_respond_to_where.nil?
+      @cached_respond_to_where = respond_to?(:where)
+    else
+      @cached_respond_to_where
+    end
+  end
+
+  def respond_to_order?
+    respond_to_where?
   end
 end
