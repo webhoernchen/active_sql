@@ -35,11 +35,11 @@ gem 'jquery-rails'
 group :test do
   # Pretty printed test output
 #  gem 'turn', '~> 0.8.3', :require => false
-end
 
-gem "shoulda"
-gem 'timecop'
-gem "mocha"
-gem "factory_girl"
+  gem "shoulda"
+  gem 'timecop'
+  gem "mocha"
+  gem "factory_girl"
+end
 
 gem "active_sql", '1.0', :path => '../../../'

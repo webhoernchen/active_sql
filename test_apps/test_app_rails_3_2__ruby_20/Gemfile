@@ -35,9 +35,11 @@ gem 'jquery-rails'
 # To use debugger
 # gem 'debugger'
 
-gem "shoulda"
-gem 'timecop'
-gem "mocha"
-gem "factory_girl"
+group :test do
+  gem "shoulda"
+  gem 'timecop'
+  gem "mocha"
+  gem "factory_girl"
+end
 
 gem "active_sql", '1.0', :path => '../../../'
