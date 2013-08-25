@@ -345,6 +345,8 @@ module ActiveSql
         by_active_record_relation wrapped_scope
       elsif wrapped_scope.respond_to?(:current_scoped_methods)
         by_active_record_scope wrapped_scope
+      else
+        raise 'unsupported'
       end
       
       self.condition_methods << sql
@@ -508,7 +510,7 @@ module ActiveSql
     def by_active_record_scope(scope)
       scoped_methods = scope.send(:current_scoped_methods)
 
-      if (find_scope_conditions = scoped_methods[:find] || {}).blank?
+      if (find_scope_conditions = scoped_methods[:find] || {}).blank? || find_scope_conditions[:conditions].blank?
         by_empty_scope_or_relation
       else
         find_conditions = find_scope_conditions[:conditions] || {}

@@ -310,16 +310,16 @@ class ActiveSql::ConditionTest < ActiveSupport::TestCase
 
     should "not find an organisation with an employee with birthday 10 years ago and one with birthday 11 years ago" do 
       organisation = FactoryGirl.create :active_sql_organisation
-      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
-      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 11.years.ago
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 11.years.ago.to_date
 
       assert !subject.include?(organisation)
     end
 
     should "find an organisation with an employee with birthday 10 years ago and one with birthday 9 years ago" do 
       organisation = FactoryGirl.create :active_sql_organisation
-      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago
-      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 9.years.ago
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 10.years.ago.to_date
+      FactoryGirl.create :active_sql_person, :active_sql_organisation => organisation, :birthday => 9.years.ago.to_date
 
       assert subject.include?(organisation)
     end

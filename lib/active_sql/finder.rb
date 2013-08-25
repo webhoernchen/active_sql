@@ -26,7 +26,7 @@ module ActiveSql::Finder
       conditions = generate_conditions_for_records(options) do |active_sql_condition|
         yield active_sql_condition, *args
       end
-      where_or_scoped conditions
+      hash_or_where conditions
     end)
   end
 
@@ -54,7 +54,7 @@ module ActiveSql::Finder
       order = generate_sort_condition do |active_sql_sort_condition|
         yield active_sql_sort_condition, *args
       end
-      order_or_scoped order
+      hash_or_order order
     end)
   end
 
@@ -203,7 +203,7 @@ module ActiveSql::Finder
     if respond_to_order?
       order conditions
     else
-      scoped :conditions => conditions
+      scoped :order => conditions
     end
   end
 
@@ -217,5 +217,29 @@ module ActiveSql::Finder
 
   def respond_to_order?
     respond_to_where?
+  end
+
+  def hash_or_where(conditions)
+    if rails_4?
+      where conditions
+    else
+      {:conditions => conditions}
+    end
+  end
+
+  def hash_or_order(conditions)
+    if rails_4?
+      order conditions
+    else
+      {:order => conditions}
+    end
+  end
+
+  def rails_4?
+    if @cached_rails_4.nil?
+      @cached_rails_4 = Rails.version >= '4.0.0'
+    else
+      @cached_rails_4
+    end
   end
 end

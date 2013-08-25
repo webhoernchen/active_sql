@@ -26,7 +26,11 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
       end
 
       should "be find with SpecialPerson.with_number '34'" do 
-        assert SpecialPerson.with_number("34").include?(@person)
+        if SpecialPerson.rails_4?
+          assert SpecialPerson.with_number("34").to_a.include?(@person)
+        else
+          assert SpecialPerson.with_number("34").all.include?(@person)
+        end
       end
     end
     
@@ -42,7 +46,11 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
 
       context "SpecialPerson.with_number('34').all" do 
         setup do 
-          @persons = SpecialPerson.with_number('34').to_a
+          @persons = if SpecialPerson.rails_4?
+            SpecialPerson.with_number('34').to_a
+          else
+            SpecialPerson.with_number('34').all
+          end
         end
 
         should "find @person_1" do 
@@ -73,7 +81,11 @@ class ActiveSql::FinderTest < ActiveSupport::TestCase
 
       context "SpecialPerson.sort_by_call_number" do 
         setup do 
-          @persons = SpecialPerson.sort_by_call_number.to_a
+          @persons = if SpecialPerson.rails_4? 
+            SpecialPerson.sort_by_call_number.to_a
+          else
+            SpecialPerson.sort_by_call_number.all
+          end
         end
 
         should "find 2 persons" do 
