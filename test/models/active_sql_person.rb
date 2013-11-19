@@ -8,8 +8,9 @@ class ActiveSqlPerson < ActiveRecord::Base
     :class_name => 'ActiveSqlOrganisation'
 
   if Rails.version >= '4.0.0'
-  has_many :colleagues, :through => :active_sql_organisation, :source => :employees,
-    :conditions => lambda { where('active_sql_people.id != #{id}') }
+  has_many :colleagues,
+    lambda { 'active_sql_people.id != #{id}' }, 
+    :through => :active_sql_organisation, :source => :employees
   else
   has_many :colleagues, :through => :active_sql_organisation, :source => :employees,
     :conditions => 'active_sql_people.id != #{id}'

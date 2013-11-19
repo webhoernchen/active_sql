@@ -244,13 +244,24 @@ module ActiveSql
     def reflection_condition
       ref = reflection
       through_reflection = ref && (ref.source_reflection || ref.through_reflection)
-      main_condition = klass.send(:sanitize_sql, ref && ref.options[:conditions])
-      through_condition = klass.send(:sanitize_sql, through_reflection && through_reflection.options[:conditions])
+      main_condition = extract_conditions_from_reflection ref
+      through_condition = extract_conditions_from_reflection through_reflection
 
       sql = [main_condition, through_condition].compact.join(' AND ')
 
       sql = sql.gsub(table_name, quoted_table_name).gsub(/\#\{([a-z0-9_]+)\}/, 'quoted_table_name.\1').\
         gsub('quoted_table_name', parent.quoted_table_name) unless sql.blank?
+    end
+
+    def extract_conditions_from_reflection(ref)
+      if !ref
+        nil
+      elsif ref.respond_to?(:scope)
+        scope = ref.scope
+        klass.send(:sanitize_sql, scope && scope.call)
+      else
+        klass.send(:sanitize_sql, ref.options[:conditions])
+      end
     end
     
     # returns the type condition for the STI-Class
