@@ -514,7 +514,9 @@ module ActiveSql
         by_empty_scope_or_relation
       else
         sql = merge_conditions where_values
-        sql.to_s.gsub(table_name, quoted_table_name)
+        sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
+          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+          gsub('FROM_TABLE', "FROM #{table_name}")
       end
     end
 
@@ -527,7 +529,9 @@ module ActiveSql
         find_conditions = find_scope_conditions[:conditions] || {}
 
         sql = klass.send(:sanitize_sql, find_conditions)
-        sql.to_s.gsub(table_name, quoted_table_name)
+        sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
+          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+          gsub('FROM_TABLE', "FROM #{table_name}")
       end
     end
 
