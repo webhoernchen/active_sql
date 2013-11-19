@@ -489,6 +489,7 @@ module ActiveSql
 
       conditions = conditions.collect do |condition|
         unless condition.blank?
+          condition = condition.to_sql if condition.respond_to?(:to_sql)
           klass.send(:sanitize_sql, condition)
         end
       end
