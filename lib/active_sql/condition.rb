@@ -473,8 +473,15 @@ module ActiveSql
       if !ref
         nil
       elsif ref.respond_to?(:scope)
-        scope = ref.scope
-        klass.send(:sanitize_sql, scope && scope.call)
+        if scope = ref.scope
+          if scope.respond_to?(:options)
+            klass.send(:sanitize_sql, scope.options[:where])
+          elsif (sql = klass.instance_exec(&scope)).is_a?(String)
+            scope.call
+          else
+            klass.send(:sanitize_sql, sql.where_values.collect(&:to_sql))
+          end
+        end
       else
         klass.send(:sanitize_sql, ref.options[:conditions])
       end
