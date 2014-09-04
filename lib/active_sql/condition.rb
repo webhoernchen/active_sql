@@ -439,7 +439,8 @@ module ActiveSql
     end
     
     def association_foreign_key
-      if srefl = reflection.source_reflection
+      srefl = reflection.source_reflection
+      if reflection.macro.to_sym != :has_and_belongs_to_many && srefl
         srefl.respond_to?(:foreign_key) ? srefl.foreign_key : srefl.primary_key_name
       else
         reflection.association_foreign_key 
