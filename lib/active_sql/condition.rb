@@ -337,7 +337,7 @@ module ActiveSql
     alias condition_for method_missing
 
     def by_scope(scope)
-      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:scoped)
+      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:where_or_scoped)
 
       wrapped_scope = scope.where_or_scoped({})
 
