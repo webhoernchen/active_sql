@@ -258,7 +258,11 @@ module ActiveSql
         nil
       elsif ref.respond_to?(:scope)
         scope = ref.scope
-        klass.send(:sanitize_sql, scope && scope.call)
+        begin
+          klass.send(:sanitize_sql, scope && scope.call)
+        rescue NoMethodError
+          klass.send(:sanitize_sql, klass.instance_eval(&scope).where_values.collect(&:to_sql).join(' AND '))
+        end
       else
         klass.send(:sanitize_sql, ref.options[:conditions])
       end
