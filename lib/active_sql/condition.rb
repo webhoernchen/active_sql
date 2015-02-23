@@ -431,7 +431,13 @@ module ActiveSql
     end
     
     def join_table
-      reflection.through_reflection ? reflection.through_reflection.table_name : reflection.options[:join_table]
+      if reflection.respond_to?(:join_table)
+        reflection.join_table
+      elsif reflection.through_reflection
+        reflection.through_reflection.table_name
+      else 
+        reflection.options[:join_table]
+      end
     end
     
     def quoted_join_table
