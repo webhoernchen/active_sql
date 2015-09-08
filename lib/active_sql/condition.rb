@@ -431,12 +431,12 @@ module ActiveSql
     end
     
     def join_table
-      if reflection.respond_to?(:join_table)
-        reflection.join_table
-      elsif reflection.through_reflection
+      if table = reflection.options[:join_table] 
+        table
+      elsif reflection.through_reflection && reflection.through_reflection.macro != :belongs_to 
         reflection.through_reflection.table_name
-      else 
-        reflection.options[:join_table]
+      elsif reflection.respond_to?(:join_table)
+        reflection.join_table
       end
     end
     
