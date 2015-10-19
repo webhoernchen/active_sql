@@ -260,8 +260,10 @@ module ActiveSql
         scope = ref.scope
         begin
           klass.send(:sanitize_sql, scope && scope.call)
-        rescue NoMethodError
-          klass.send(:sanitize_sql, klass.instance_eval(&scope).where_values.collect(&:to_sql).join(' AND '))
+        rescue NoMethodError => e
+          unless e.message.include?('extending')
+            klass.send(:sanitize_sql, klass.instance_eval(&scope).where_values.collect(&:to_sql).join(' AND '))
+          end
         end
       else
         klass.send(:sanitize_sql, ref.options[:conditions])

@@ -483,10 +483,19 @@ module ActiveSql
         if scope = ref.scope
           if scope.respond_to?(:options)
             klass.send(:sanitize_sql, scope.options[:where])
-          elsif (sql = klass.instance_exec(&scope)).is_a?(String)
-            scope.call
           else
-            klass.send(:sanitize_sql, sql.where_values.collect(&:to_sql))
+            begin
+              sql = klass.instance_exec(&scope)
+              if sql.is_a?(String)
+                sql
+              else
+                klass.send(:sanitize_sql, sql.where_values.collect(&:to_sql))
+              end
+            rescue NoMethodError => e
+              unless e.message.include?('extending')
+                raise e
+              end
+            end
           end
         end
       else
