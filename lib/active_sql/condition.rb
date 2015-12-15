@@ -536,9 +536,11 @@ module ActiveSql
 
     def by_active_record_relation_hash(relation)
       if (where_values_hash = relation.where_values_hash).blank?
+        by_active_record_relation relation
+      elsif (where_values = relation.where_values).blank?
         by_empty_scope_or_relation
       else
-        cond = relation.where_values.collect(&:to_sql) + where_values_hash.values
+        cond = where_values.collect(&:to_sql) + where_values_hash.values
         sql = klass.send(:sanitize_sql, cond)
         sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
           gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
