@@ -341,7 +341,9 @@ module ActiveSql
 
       wrapped_scope = scope.where_or_scoped({})
 
-      sql = if wrapped_scope.respond_to?(:where_values)
+      sql = if wrapped_scope.respond_to?(:where_values_hash)
+        by_active_record_relation_hash wrapped_scope
+      elsif wrapped_scope.respond_to?(:where_values)
         by_active_record_relation wrapped_scope
       elsif wrapped_scope.respond_to?(:current_scoped_methods)
         by_active_record_scope wrapped_scope
@@ -530,6 +532,18 @@ module ActiveSql
       conditions.delete_if(&:blank?)
 
       "(#{conditions.join(') AND (')})"
+    end
+
+    def by_active_record_relation_hash(relation)
+      if (where_values_hash = relation.where_values_hash).blank?
+        by_empty_scope_or_relation
+      else
+        cond = relation.where_values.collect(&:to_sql) + where_values_hash.values
+        sql = klass.send(:sanitize_sql, cond)
+        sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
+          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+          gsub('FROM_TABLE', "FROM #{table_name}")
+      end
     end
 
     def by_active_record_relation(relation)
