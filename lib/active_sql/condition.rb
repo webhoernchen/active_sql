@@ -491,7 +491,7 @@ module ActiveSql
               if sql.is_a?(String)
                 sql
               else
-                klass.send(:sanitize_sql, sql.where_values.collect(&:to_sql))
+                klass.send :sanitize_sql, sql.where_values.collect(&:to_sql) + sql.where_values_hash.values
               end
             rescue NoMethodError => e
               unless e.message.include?('extending')
@@ -540,8 +540,13 @@ module ActiveSql
       elsif (where_values = relation.where_values).blank?
         by_empty_scope_or_relation
       else
-        cond = where_values.collect(&:to_sql) + where_values_hash.values
-        sql = klass.send(:sanitize_sql, cond)
+        sql = if relation.respond_to? :to_sql
+          relation.to_sql.split('WHERE')[1..-1].join('WHERE').strip
+        else
+          cond = where_values.collect(&:to_sql) + where_values_hash.values
+          klass.send(:sanitize_sql, cond)
+        end
+        
         sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
           gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
           gsub('FROM_TABLE', "FROM #{table_name}")
