@@ -318,6 +318,8 @@ module ActiveSql
         else
           child
         end
+      elsif klass.respond_to? name
+        by_scope klass.send(name, args)
       else
         super
       end
