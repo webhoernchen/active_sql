@@ -262,7 +262,12 @@ module ActiveSql
           klass.send(:sanitize_sql, scope && scope.call)
         rescue NoMethodError => e
           unless e.message.include?('extending')
-            klass.send(:sanitize_sql, klass.instance_eval(&scope).where_values.collect(&:to_sql).join(' AND '))
+            relation = klass.instance_eval(&scope)
+            if relation.respond_to? :where_values
+              klass.send(:sanitize_sql, relation.where_values.collect(&:to_sql).join(' AND '))
+            else
+              relation.arel.where_sql.gsub(/^WHERE/, '').strip
+            end
           end
         end
       else
