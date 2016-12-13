@@ -266,7 +266,12 @@ module ActiveSql
             if relation.respond_to? :where_values
               klass.send(:sanitize_sql, relation.where_values.collect(&:to_sql).join(' AND '))
             else
-              relation.arel.where_sql.gsub(/^WHERE/, '').strip
+              sql = relation.arel.where_sql
+              if sql.nil?
+                sql
+              else
+                sql.gsub(/^WHERE/, '').strip
+              end
             end
           end
         end
