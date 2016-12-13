@@ -492,6 +492,8 @@ module ActiveSql
               sql = klass.instance_exec(&scope)
               if sql.is_a?(String)
                 sql
+              elsif sql.respond_to? :arel
+                sql.arel.where_sql
               else
                 klass.send :sanitize_sql, sql.where_values.collect(&:to_sql) + sql.where_values_hash.values
               end
@@ -539,10 +541,12 @@ module ActiveSql
     def by_active_record_relation_hash(relation)
       if (where_values_hash = relation.where_values_hash).blank?
         by_active_record_relation relation
-      elsif (where_values = relation.where_values).blank?
+      elsif relation.respond_to?(:where_values) && (where_values = relation.where_values).blank?
         by_empty_scope_or_relation
       else
-        sql = if relation.respond_to? :to_sql
+        sql = if relation.respond_to? :arel
+          relation.arel.where_sql.split('WHERE')[1..-1].join('WHERE').strip
+        elsif relation.respond_to? :to_sql
           relation.to_sql.split('WHERE')[1..-1].join('WHERE').strip
         else
           cond = where_values.collect(&:to_sql) + where_values_hash.values
@@ -556,7 +560,12 @@ module ActiveSql
     end
 
     def by_active_record_relation(relation)
-      if (where_values = relation.where_values).blank?
+      if relation.respond_to? :arel
+        relation.arel.where_sql.to_s.split('WHERE')[1..-1].join('WHERE').strip.
+          gsub("FROM #{table_name}", 'FROM_TABLE').
+          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+          gsub('FROM_TABLE', "FROM #{table_name}")
+      elsif (where_values = relation.where_values).blank?
         by_empty_scope_or_relation
       else
         sql = merge_conditions where_values
