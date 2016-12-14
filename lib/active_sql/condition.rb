@@ -518,7 +518,13 @@ module ActiveSql
       arel = relation.arel
       if where_sql = arel.where_sql
         where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
-        klass.send :sanitize_sql, [where_sql] + relation.where_values_hash.values
+        values = relation.where_values_hash.values
+
+        if values.empty?
+          where_sql
+        else
+          klass.send :sanitize_sql, [where_sql] + values
+        end
       end
     end
     
