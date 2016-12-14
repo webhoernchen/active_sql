@@ -2,6 +2,8 @@
 *.swp
 *.un~
 
+.rake_tasks~
+
 # Logs
 *.log
 schema.rb
