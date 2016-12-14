@@ -1,5 +1,5 @@
 PATH
-  remote: ../../../
+  remote: ../../
   specs:
     active_sql (1.0)
       activerecord
@@ -138,3 +138,6 @@ DEPENDENCIES
   therubyracer
   timecop
   uglifier (>= 1.0.3)
+
+BUNDLED WITH
+   1.13.6

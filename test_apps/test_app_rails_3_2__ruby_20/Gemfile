@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '>= 3.2.0', '< 3.3.0'
-gem 'mysql2'
+gem 'mysql2', '~> 0.3.10'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -42,4 +42,4 @@ group :test do
   gem "factory_girl"
 end
 
-gem "active_sql", '1.0', :path => '../../../'
+gem "active_sql", '1.0', :path => '../../'

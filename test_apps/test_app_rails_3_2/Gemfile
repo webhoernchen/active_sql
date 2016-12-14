@@ -42,4 +42,4 @@ group :test do
   gem "factory_girl"
 end
 
-gem "active_sql", '1.0', :path => '../../../'
+gem "active_sql", '1.0', :path => '../../'
