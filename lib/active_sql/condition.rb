@@ -343,17 +343,22 @@ module ActiveSql
 
       wrapped_scope = scope.where_or_scoped({})
 
-      sql = if wrapped_scope.respond_to?(:where_values_hash)
-        by_active_record_relation_hash wrapped_scope
-      elsif wrapped_scope.respond_to?(:where_values)
-        by_active_record_relation wrapped_scope
+      sql_condition = if wrapped_scope.respond_to? :arel
+        sql = extract_conditions_from_arel_relation wrapped_scope
+        if sql
+          sql = sql.gsub("FROM #{table_name}", 'FROM_TABLE').
+          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+          gsub('FROM_TABLE', "FROM #{table_name}")
+        else
+          by_empty_scope_or_relation
+        end
       elsif wrapped_scope.respond_to?(:current_scoped_methods)
         by_active_record_scope wrapped_scope
       else
         raise 'unsupported'
       end
       
-      self.condition_methods << sql
+      self.condition_methods << sql_condition
     end
 
     def by_custom_column(sql)
@@ -437,7 +442,7 @@ module ActiveSql
     def join_table
       if table = reflection.options[:join_table] 
         table
-      elsif reflection.through_reflection && reflection.through_reflection.macro != :belongs_to 
+      elsif reflection.through_reflection# && reflection.through_reflection.macro != :belongs_to 
         reflection.through_reflection.table_name
       elsif reflection.respond_to?(:join_table)
         reflection.join_table
@@ -474,7 +479,7 @@ module ActiveSql
       main_condition = extract_conditions_from_reflection ref
       through_condition = extract_conditions_from_reflection through_reflection
 
-      sql = [main_condition, through_condition].compact.join(' AND ')
+      sql = [main_condition, through_condition].reject(&:blank?).join(' AND ')
 
       sql.gsub(table_name, quoted_table_name).gsub(/\#\{([a-z0-9_]+)\}/, 'parent_table_name.\1').\
         gsub('parent_table_name', quoted_parent_table_name) unless sql.blank?
@@ -493,7 +498,7 @@ module ActiveSql
               if sql.is_a?(String)
                 sql
               elsif sql.respond_to? :arel
-                sql.arel.where_sql
+                extract_conditions_from_arel_relation sql
               else
                 klass.send :sanitize_sql, sql.where_values.collect(&:to_sql) + sql.where_values_hash.values
               end
@@ -506,6 +511,14 @@ module ActiveSql
         end
       else
         klass.send(:sanitize_sql, ref.options[:conditions])
+      end
+    end
+
+    def extract_conditions_from_arel_relation(relation)
+      arel = relation.arel
+      if where_sql = arel.where_sql
+        where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
+        klass.send :sanitize_sql, [where_sql] + relation.where_values_hash.values
       end
     end
     
@@ -533,47 +546,50 @@ module ActiveSql
         end
       end
 
-      conditions.delete_if(&:blank?)
+      conditions.reject!(&:blank?)
 
-      "(#{conditions.join(') AND (')})"
-    end
-
-    def by_active_record_relation_hash(relation)
-      if (where_values_hash = relation.where_values_hash).blank?
-        by_active_record_relation relation
-      elsif relation.respond_to?(:where_values) && (where_values = relation.where_values).blank?
-        by_empty_scope_or_relation
-      else
-        sql = if relation.respond_to? :arel
-          relation.arel.where_sql.split('WHERE')[1..-1].join('WHERE').strip
-        elsif relation.respond_to? :to_sql
-          relation.to_sql.split('WHERE')[1..-1].join('WHERE').strip
-        else
-          cond = where_values.collect(&:to_sql) + where_values_hash.values
-          klass.send(:sanitize_sql, cond)
-        end
-        
-        sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
-          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
-          gsub('FROM_TABLE', "FROM #{table_name}")
+      unless conditions.empty?
+        "(#{conditions.join(') AND (')})"
       end
     end
 
-    def by_active_record_relation(relation)
-      if relation.respond_to? :arel
-        relation.arel.where_sql.to_s.split('WHERE')[1..-1].join('WHERE').strip.
-          gsub("FROM #{table_name}", 'FROM_TABLE').
-          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
-          gsub('FROM_TABLE', "FROM #{table_name}")
-      elsif (where_values = relation.where_values).blank?
-        by_empty_scope_or_relation
-      else
-        sql = merge_conditions where_values
-        sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
-          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
-          gsub('FROM_TABLE', "FROM #{table_name}")
-      end
-    end
+#    def by_active_record_relation_hash(relation)
+#      if (where_values_hash = relation.where_values_hash).blank?
+#        by_active_record_relation relation
+#      elsif relation.respond_to?(:where_values) && (where_values = relation.where_values).blank?
+#        by_empty_scope_or_relation
+#      else
+#        sql = if relation.respond_to? :to_sql
+#          relation.to_sql.split('WHERE')[1..-1].join('WHERE').strip
+#        else
+#          cond = where_values.collect(&:to_sql) + where_values_hash.values
+#          klass.send(:sanitize_sql, cond)
+#        end
+#      
+#        unless sql.blank?
+#          sql.gsub("FROM #{table_name}", 'FROM_TABLE').
+#            gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+#            gsub('FROM_TABLE', "FROM #{table_name}")
+#        end
+#      end
+#    end
+
+#    def by_active_record_relation(relation)
+#      if relation.respond_to? :to_sql
+#        sql = relation.to_sql.to_s.split('WHERE')[1..-1].join('WHERE').strip.
+#          gsub("FROM #{table_name}", 'FROM_TABLE').
+#          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+#          gsub('FROM_TABLE', "FROM #{table_name}")
+#        sql.blank? ? nil : sql
+#      elsif (where_values = relation.where_values).blank?
+#        by_empty_scope_or_relation
+#      else
+#        sql = merge_conditions where_values
+#        sql.to_s.gsub("FROM #{table_name}", 'FROM_TABLE').
+#          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+#          gsub('FROM_TABLE', "FROM #{table_name}")
+#      end
+#    end
 
     def by_active_record_scope(scope)
       scoped_methods = scope.send(:current_scoped_methods)
@@ -758,7 +774,7 @@ module ActiveSql
     # the reflection_condition and the type_condition for sti are included, too
     def sql_conditions_sum
       sql = (record_conditions_from_own_column[:sql_conditions] + \
-        record_conditions_from_childs[:sql_conditions]).join(") #{sql_join.upcase} (")
+        record_conditions_from_childs[:sql_conditions]).reject(&:blank?).join(") #{sql_join.upcase} (")
       sql = "(#{sql})" unless sql.blank?
 
       if sql_affix_reflection = reflection_condition

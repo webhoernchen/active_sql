@@ -247,7 +247,7 @@ module ActiveSql
       main_condition = extract_conditions_from_reflection ref
       through_condition = extract_conditions_from_reflection through_reflection
 
-      sql = [main_condition, through_condition].compact.join(' AND ')
+      sql = [main_condition, through_condition].reject(&:blank?).join(' AND ')
 
       sql = sql.gsub(table_name, quoted_table_name).gsub(/\#\{([a-z0-9_]+)\}/, 'quoted_table_name.\1').\
         gsub('quoted_table_name', parent.quoted_table_name) unless sql.blank?
@@ -266,12 +266,9 @@ module ActiveSql
             if relation.respond_to? :where_values
               klass.send(:sanitize_sql, relation.where_values.collect(&:to_sql).join(' AND '))
             else
-              sql = relation.arel.where_sql
-              if sql.nil?
-                sql
-              else
-                sql.gsub(/^WHERE/, '').strip
-              end
+              sql = relation.to_sql
+              sql = sql.split('WHERE')[1..-1].join('WHERE').strip if sql
+              sql
             end
           end
         end
@@ -298,7 +295,7 @@ module ActiveSql
       where_conditions << type_condition_for_sti
       where_conditions << condition_sql
 
-      where_conditions.compact!
+      where_conditions.reject!(&:blank?)
       unless where_conditions.empty?
         "(#{where_conditions.join(') AND (')})"
       end
