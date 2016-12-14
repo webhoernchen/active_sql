@@ -7,7 +7,7 @@ source "$HOME/.rvm/scripts/rvm"
 local_folder=$(pwd)
 RESULT=0
 
-for test_app in $(ls test_apps | grep -v 2_3)
+for test_app in $(ls test_apps)
 do
   if [[ $RESULT == 0 ]]
   then
