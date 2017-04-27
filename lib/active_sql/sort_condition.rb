@@ -260,7 +260,7 @@ module ActiveSql
         scope = ref.scope
         begin
           klass.send(:sanitize_sql, scope && scope.call)
-        rescue NoMethodError => e
+        rescue NameError => e
           unless e.message.include?('extending')
             relation = klass.instance_eval(&scope)
             if relation.respond_to? :where_values
