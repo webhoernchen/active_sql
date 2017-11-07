@@ -517,8 +517,9 @@ module ActiveSql
     def extract_conditions_from_arel_relation(relation)
       arel = relation.arel
       if where_sql = arel.where_sql
-        where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
         values = relation.where_values_hash.values
+        where_sql = relation.to_sql if values.empty? && where_sql.include?('= ?')
+        where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
 
         if values.empty?
           where_sql
