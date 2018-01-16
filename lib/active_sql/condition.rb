@@ -319,7 +319,7 @@ module ActiveSql
           child
         end
       elsif klass.respond_to? name
-        by_scope klass.send(name, *args)
+        by_scope unscoped_klass.send(name, *args)
       else
         super
       end
@@ -387,6 +387,13 @@ module ActiveSql
     alias any_of any
     
     protected
+    def unscoped_klass
+      @unscoped_klass ||= if klass.respond_to? :unscoped
+        klass.unscoped
+      else
+        klass
+      end
+    end
     def sql_join=(value)
       if VALID_SQL_JOINS.include?(value)
         @sql_join = value
