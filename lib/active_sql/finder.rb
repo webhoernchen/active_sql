@@ -172,7 +172,15 @@ module ActiveSql::Finder
     condition = ActiveSql::SortCondition.new({:klass => self})
     sort_conditions = yield(condition)
     sort_conditions = [sort_conditions] unless sort_conditions.is_a?(Array)
-    sort_conditions.collect(&:to_sort_condition).join(', ')
+    sort_condition = sort_conditions.collect(&:to_sort_condition).join(', ')
+    
+    # Fix for DEPRECATION WARNING in Rails 5.2: 
+    # Dangerous query method (method whose arguments are used as raw SQL) called with non-attribute argument(s)
+    if defined? Arel::Nodes::SqlLiteral
+      Arel::Nodes::SqlLiteral.new sort_condition
+    else
+      sort_condition
+    end
   end
 
   def active_sql_scope(name, *args, &block)
