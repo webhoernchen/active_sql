@@ -663,8 +663,17 @@ module ActiveSql
     # returns the sql string
     # the column and the value are marked with LOWER when the value is not nil
     def where(sql_condition_method, value)
-      if column_name.blank? && table_column_sql.blank? 
-        raise ActiveSql::TypeError, "Only columns from tables can be checked"
+      if column_name.blank? && table_column_sql.blank?
+        if reflection
+          if value.is_a? klass
+            condition_for(klass.primary_key) == value.send(klass.primary_key)
+          else
+            message = "#{klass.to_s}(##{klass.object_id}) expected, got #{value.inspect} which is an instance of #{value.class}(##{value.class.object_id})"
+            raise ActiveSql::TypeError, message
+          end
+        else column_name.blank? && table_column_sql.blank?
+          raise ActiveSql::TypeError, "Only columns from tables can be checked"
+        end
       else
         table_column = if table_column_sql.blank?
           "#{quoted_table_name}.#{column_name}"
