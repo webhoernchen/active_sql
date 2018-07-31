@@ -381,8 +381,12 @@ module ActiveSql
       self.condition_methods << sql
     end
 
-    def any
-      self
+    def any(&block)
+      if block_given?
+        yield self
+      else
+        self
+      end
     end
     alias any_of any
     
