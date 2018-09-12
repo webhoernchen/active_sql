@@ -530,7 +530,7 @@ module ActiveSql
       if where_sql = arel.where_sql
         values = relation.where_values_hash.values.flatten
 
-        count_scanned_values = where_sql.scan(/\=\s+\?/).size
+        count_scanned_values = where_sql.scan(/\?/).size
         
         if !count_scanned_values.zero? && count_scanned_values != values.size
           values = []
