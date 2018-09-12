@@ -529,15 +529,17 @@ module ActiveSql
       arel = relation.arel
       if where_sql = arel.where_sql
         values = relation.where_values_hash.values.flatten
+
+        count_scanned_values = where_sql.scan(/\=\s+\?/).size
         
-        if where_sql.scan(/\=\s+\?/).size != values.size
+        if !count_scanned_values.zero? && count_scanned_values != values.size
           values = []
           where_sql = relation.to_sql
         end
         
         where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
 
-        if values.empty?
+        if values.empty? || count_scanned_values.zero?
           where_sql
         else
           klass.send :sanitize_sql, [where_sql] + values
