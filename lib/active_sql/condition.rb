@@ -529,7 +529,12 @@ module ActiveSql
       arel = relation.arel
       if where_sql = arel.where_sql
         values = relation.where_values_hash.values.flatten
-        where_sql = relation.to_sql if values.empty? && where_sql.include?('= ?')
+        
+        if where_sql.scan(/\=\s+\?/).size != values.size
+          values = []
+          where_sql = relation.to_sql
+        end
+        
         where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
 
         if values.empty?
