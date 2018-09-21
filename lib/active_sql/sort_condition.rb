@@ -125,6 +125,11 @@ module ActiveSql
     def by_column(name, options={})
       self.child = create_child_by_column(name.to_s, options)
     end
+
+    def pk
+      by_column klass.primary_key
+    end
+    alias by_pk pk
     
     protected
     def parent_klass

@@ -389,6 +389,10 @@ module ActiveSql
       end
     end
     alias any_of any
+
+    def pk
+      condition_for primary_key
+    end
     
     protected
     def unscoped_klass
@@ -636,15 +640,22 @@ module ActiveSql
     end
 
     def calculation(type, options, &block)
-      options = {:quoted_table_name => quoted_table_name, :klass => klass}.merge(options)
+      if block_given?
+        options = {:quoted_table_name => quoted_table_name, :klass => klass}.merge(options)
 
-      condition = ActiveSql::SortCondition.new(options)
-      sort_condition = yield(condition)
-      index = [type, sort_condition.full_name, sort_condition.object_id].join('__')
-      column = sort_condition.to_sort_condition(false)
+        condition = ActiveSql::SortCondition.new(options)
+        sort_condition = yield condition
+        sort_condition = sort_condition.by_pk if sort_condition.send(:reflection)
+        index = [type, sort_condition.full_name, sort_condition.object_id].join('__')
+        column = sort_condition.to_sort_condition(false)
 
-      childs_hash[index] = self.class.new({:klass => self.klass, :parent => self, 
-        :table_column_sql => column, :condition_index => condition_index, :sql_join => sql_join})
+        childs_hash[index] = self.class.new({:klass => self.klass, :parent => self, 
+          :table_column_sql => column, :condition_index => condition_index, :sql_join => sql_join})
+      else
+        name = reflection.name
+        parent.childs_hash.delete_if {|k, v| v.object_id == object_id }
+        parent.count {|r| r.send name }
+      end
     end
 
     # create a like condition for the given value
