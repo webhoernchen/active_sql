@@ -747,6 +747,9 @@ module ActiveSql
         childs_hash[child_condition_index_name] = create_child_by_reflection(reflection_from_klass, child_sql_join, options)
       elsif klass.column_names.include?(name.to_s)
         childs_hash[child_condition_index_name] = create_child_by_column(name.to_s, child_sql_join)
+      elsif klass.respond_to?(:attribute_alias?) && klass.attribute_alias?(name)
+        alias_name = klass.attribute_alias name
+        create_or_find_child_by_name alias_name, child_sql_join, options, block_id
       else
         nil
       end
