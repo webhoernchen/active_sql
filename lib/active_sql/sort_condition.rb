@@ -117,8 +117,8 @@ module ActiveSql
         self.child = create_child_by_reflection(reflection_from_klass, options)
       elsif klass.column_names.include?(name.to_s)
         self.child = create_child_by_column(name.to_s, options)
-      elsif klass.respond_to? name
-        by_scope unscoped_klass.send(name, *args)
+#      elsif klass.respond_to? name
+#        by_scope unscoped_klass.send(name, *args)
       else
         super
       end
