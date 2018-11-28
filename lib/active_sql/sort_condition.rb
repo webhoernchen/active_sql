@@ -117,6 +117,8 @@ module ActiveSql
         self.child = create_child_by_reflection(reflection_from_klass, options)
       elsif klass.column_names.include?(name.to_s)
         self.child = create_child_by_column(name.to_s, options)
+      elsif klass.respond_to? name
+        by_scope unscoped_klass.send(name, *args)
       else
         super
       end
@@ -130,8 +132,30 @@ module ActiveSql
       by_column klass.primary_key
     end
     alias by_pk pk
+
+    def by_scope(scope)
+      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:where_or_scoped)
+
+      sql = if scope.respond_to? :arel
+        scope.arel.orders.collect do |item|
+          item.respond_to?(:to_sql) ? item.to_sql : item.to_s
+        end.join(', ')
+      else
+        scope.to_sql.split('ORDER BY')[1..-1].join('ORDER BY').strip
+      end
+
+      by_column sql
+    end
     
     protected
+    def unscoped_klass
+      @unscoped_klass ||= if klass.respond_to? :unscoped
+        klass.unscoped
+      else
+        klass
+      end
+    end
+
     def parent_klass
       parent.klass
     end
