@@ -402,6 +402,7 @@ module ActiveSql
         klass
       end
     end
+
     def sql_join=(value)
       if VALID_SQL_JOINS.include?(value)
         @sql_join = value
