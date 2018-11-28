@@ -133,19 +133,19 @@ module ActiveSql
     end
     alias by_pk pk
 
-    def by_scope(scope)
-      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:where_or_scoped)
-
-      sql = if scope.respond_to? :arel
-        scope.arel.orders.collect do |item|
-          item.respond_to?(:to_sql) ? item.to_sql : item.to_s
-        end.join(', ')
-      else
-        scope.to_sql.split('ORDER BY')[1..-1].join('ORDER BY').strip
-      end
-
-      by_column sql
-    end
+#    def by_scope(scope)
+#      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:where_or_scoped)
+#
+#      sql = if scope.respond_to? :arel
+#        scope.arel.orders.collect do |item|
+#          item.respond_to?(:to_sql) ? item.to_sql : item.to_s
+#        end.join(', ')
+#      else
+#        scope.to_sql.split('ORDER BY')[1..-1].join('ORDER BY').strip
+#      end
+#
+#      by_column sql
+#    end
     
     protected
     def unscoped_klass
