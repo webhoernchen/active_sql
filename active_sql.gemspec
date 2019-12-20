@@ -13,7 +13,6 @@ Gem::Specification.new do |s|
   s.summary     = "Write sql in ruby syntax"
   s.description = "Write sql in ruby syntax"
 
-  s.rubyforge_project = "active_sql"
   s.files         = Dir.glob(File.expand_path("../**/*", __FILE__)).select {|f| File.file?(f) }.collect {|f| f.gsub(File.expand_path("../", __FILE__) + '/', '') }
   s.test_files    = []
   s.executables   = []
