@@ -128,8 +128,8 @@ module ActiveSql
       self.child = create_child_by_column(name.to_s, options)
     end
 
-    def pk
-      by_column klass.primary_key
+    def pk(*args)
+      by_column(klass.primary_key, *args)
     end
     alias by_pk pk
 
