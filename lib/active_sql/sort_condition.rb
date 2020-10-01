@@ -117,8 +117,8 @@ module ActiveSql
         self.child = create_child_by_reflection(reflection_from_klass, options)
       elsif klass.column_names.include?(name.to_s)
         self.child = create_child_by_column(name.to_s, options)
-#      elsif klass.respond_to? name
-#        by_scope unscoped_klass.send(name, *args)
+      elsif klass.respond_to? name
+        by_scope unscoped_klass.send(name, *args)
       else
         super
       end
@@ -133,19 +133,20 @@ module ActiveSql
     end
     alias by_pk pk
 
-#    def by_scope(scope)
-#      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:where_or_scoped)
-#
-#      sql = if scope.respond_to? :arel
-#        scope.arel.orders.collect do |item|
-#          item.respond_to?(:to_sql) ? item.to_sql : item.to_s
-#        end.join(', ')
-#      else
+    def by_scope(scope)
+      raise ScopeError, 'no scope given' unless scope && scope.respond_to?(:where_or_scoped)
+
+      sql = if scope.respond_to? :order_values
+        scope.order_values.collect do |item|
+          item.respond_to?(:to_sql) ? item.to_sql : item.to_s
+        end.collect(&:strip).join(', ')
+      else
+        raise 'Currently not supported'
 #        scope.to_sql.split('ORDER BY')[1..-1].join('ORDER BY').strip
-#      end
-#
-#      by_column sql
-#    end
+      end
+
+      by_column sql
+    end
     
     protected
     def unscoped_klass
