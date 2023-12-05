@@ -347,7 +347,7 @@ module ActiveSql
         sql = extract_conditions_from_arel_relation wrapped_scope
         if sql
           sql = sql.gsub("FROM #{table_name}", 'FROM_TABLE').
-          gsub(Regexp.new("(\\`|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
+          gsub(Regexp.new("(\\`|\"|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
           gsub('FROM_TABLE', "FROM #{table_name}")
         else
           by_empty_scope_or_relation
@@ -535,6 +535,7 @@ module ActiveSql
       if where_sql = arel.where_sql
         values = relation.where_values_hash.values.flatten
 
+	where_sql = where_sql.strip.gsub(/(\s)\$[0-9]+(\s|$)/, '\1?\2')
         count_scanned_values = where_sql.scan(/\?/).size
         
         if !count_scanned_values.zero? && count_scanned_values != values.size
