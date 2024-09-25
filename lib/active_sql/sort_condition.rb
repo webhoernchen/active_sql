@@ -67,8 +67,12 @@ module ActiveSql
       if block_given?
         active_sql_condition = ActiveSql::Condition.new(:klass => klass, 
           :condition_index => condition_index, :table_name => quoted_table_name)
-        yield(active_sql_condition)
-        self.condition_sql = klass.send(:sanitize_sql, active_sql_condition.to_record_conditions)
+
+        yield active_sql_condition
+
+        sql = klass.send(:sanitize_sql, active_sql_condition.to_record_conditions)
+        sql.gsub! table_name, quoted_table_name unless sql.include? quoted_table_name
+        self.condition_sql = sql
       end
       self
     end
