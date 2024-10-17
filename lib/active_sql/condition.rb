@@ -191,7 +191,7 @@ module ActiveSql
     
     # the value of the column is equal +value+
     def is_equal(value)
-      value.nil? ? where('IS ?', value) : where('<=> ?', value)
+      value.nil? ? where('IS NULL', []) : where('<=> ?', value)
     end
     alias == is_equal
     alias equals is_equal
@@ -199,7 +199,7 @@ module ActiveSql
     
     # the value of the column is not equal +value+
     def is_not_equal(value)
-      value.nil? ? where('IS NOT ?', value) : where('<> ?', value)
+      value.nil? ? where('IS NOT NULL', []) : where('<> ?', value)
     end
     alias equals_not is_not_equal
     alias is_not is_not_equal
