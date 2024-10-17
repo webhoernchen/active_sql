@@ -532,25 +532,40 @@ module ActiveSql
 
     def extract_conditions_from_arel_relation(relation)
       arel = relation.arel
-      if where_sql = arel.where_sql
-        values = relation.where_values_hash.values.flatten
 
-	where_sql = where_sql.strip.gsub(/(\s)\$[0-9]+(\s|$)/, '\1?\2')
-        count_scanned_values = where_sql.scan(/\?/).size
-        
-        if !count_scanned_values.zero? && count_scanned_values != values.size
-          values = []
-          where_sql = relation.to_sql
-        end
-        
-        where_sql = where_sql.split('WHERE')[1..-1].join('WHERE').strip
+      where_sql = arel.where_sql
+      return unless where_sql
 
-        if values.empty? || count_scanned_values.zero?
-          where_sql
-        else
-          klass.send :sanitize_sql, [where_sql] + values
-        end
+      values = relation.where_values_hash.values.flatten
+
+      if values.empty?
+        wheres = arel.instance_eval { @ctx.wheres }
+        values = wheres.map do |w|
+          w.named_binds || w.positional_binds
+        end.compact.flatten if wheres.first.respond_to?(:named_binds)
       end
+
+      where_sql = normalize_sql where_sql
+
+      count_scanned_values = where_sql.scan(/\?/).size
+
+      if !count_scanned_values.zero? && count_scanned_values != values.size
+        values = []
+        where_sql = normalize_sql relation.to_sql
+      end
+
+      if values.empty? || count_scanned_values.zero?
+        where_sql
+      else
+        klass.send :sanitize_sql, [where_sql] + values
+      end
+    end
+
+    def normalize_sql(sql)
+      sql.strip
+        .gsub(/(\s)\$[0-9]+([^0-9]|$)/, '\1?\2')
+        .split('WHERE')[1..-1].join('WHERE')
+        .strip
     end
     
     # returns the type condition for the STI-Class
