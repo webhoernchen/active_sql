@@ -183,7 +183,13 @@ module ActiveSql
     end
     
     def join_table
-      reflection.through_reflection ? reflection.through_reflection.table_name : reflection.options[:join_table]
+      if table = reflection.options[:join_table] 
+        table
+      elsif reflection.through_reflection# && reflection.through_reflection.macro != :belongs_to 
+        reflection.through_reflection.table_name
+      elsif reflection.respond_to?(:join_table)
+        reflection.join_table
+      end
     end
     
     def quoted_join_table
