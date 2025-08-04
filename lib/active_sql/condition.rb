@@ -705,7 +705,8 @@ module ActiveSql
       if column_name.blank? && table_column_sql.blank?
         if reflection
           if value.is_a? klass
-            condition_for(klass.primary_key) == value.send(klass.primary_key)
+            value = value.public_send klass.primary_key
+            condition_for(klass.primary_key).send :where, sql_condition_method, value
           else
             message = "#{klass.to_s}(##{klass.object_id}) expected, got #{value.inspect} which is an instance of #{value.class}(##{value.class.object_id})"
             raise ActiveSql::TypeError, message
