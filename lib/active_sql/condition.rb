@@ -166,7 +166,7 @@ module ActiveSql
     #
     # the value of the column is in this Array
     def includes(value)
-      if value.is_a?(Array)
+      if [ActiveRecord::Relation, Array].any? { |klass| value.is_a? klass }
         where_in(value)
       else
         where_like("%#{value}%")
@@ -180,7 +180,7 @@ module ActiveSql
     #
     # the value of the column is not in this Array
     def not_includes(value)
-      if value.is_a?(Array)
+      if [ActiveRecord::Relation, Array].any? { |klass| value.is_a? klass }
         where_not_in(value)
       else
         where_not_like("%#{value}%")
@@ -682,12 +682,16 @@ module ActiveSql
 
     # create a IN-condition for the given values (Array)
     def where_in(values)
-      where('IN (?)', [values])
+      is_array = [ActiveRecord::Relation, Array].any? { |klass| values.is_a? klass }
+      values = [values] unless is_array
+      where('IN (?)', values)
     end
 
     # create a NOT IN-condition for the given values (Array)
     def where_not_in(values)
-      where('NOT IN (?)', [values])
+      is_array = [ActiveRecord::Relation, Array].any? { |klass| values.is_a? klass }
+      values = [values] unless is_array
+      where('NOT IN (?)', values)
     end
     
     # create a not like condition for the given value
@@ -707,6 +711,9 @@ module ActiveSql
           if value.is_a? klass
             value = value.public_send klass.primary_key
             condition_for(klass.primary_key).send :where, sql_condition_method, value
+          elsif value.is_a?(ActiveRecord::Relation) && value.klass == klass
+            value = value.pluck klass.primary_key
+            condition_for(klass.primary_key).send :where, sql_condition_method, [value]
           else
             message = "#{klass.to_s}(##{klass.object_id}) expected, got #{value.inspect} which is an instance of #{value.class}(##{value.class.object_id})"
             raise ActiveSql::TypeError, message
