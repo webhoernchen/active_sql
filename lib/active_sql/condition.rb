@@ -686,16 +686,12 @@ module ActiveSql
 
     # create a IN-condition for the given values (Array)
     def where_in(values)
-      is_array = [ActiveRecord::Relation, Array].any? { |klass| values.is_a? klass }
-      values = [values] unless is_array
-      where('IN (?)', values)
+      where('IN (?)', [values])
     end
 
     # create a NOT IN-condition for the given values (Array)
     def where_not_in(values)
-      is_array = [ActiveRecord::Relation, Array].any? { |klass| values.is_a? klass }
-      values = [values] unless is_array
-      where('NOT IN (?)', values)
+      where('NOT IN (?)', [values])
     end
     
     # create a not like condition for the given value
