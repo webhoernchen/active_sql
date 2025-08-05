@@ -346,9 +346,13 @@ module ActiveSql
       sql_condition = if wrapped_scope.respond_to? :arel
         sql = extract_conditions_from_arel_relation wrapped_scope
         if sql
-          sql = sql.gsub("FROM #{table_name}", 'FROM_TABLE').
-          gsub(Regexp.new("(\\`|\"|\\(|\\ )#{table_name}"), '\1' + "#{quoted_table_name}").
-          gsub('FROM_TABLE', "FROM #{table_name}")
+          replacement_from = "FROM #{table_name} "
+          replacement_to = 'FROM_TABLE '
+
+          sql = sql
+            .gsub(replacement_from, replacement_to)
+            .gsub(Regexp.new("(\\`|\"|\\(|\\ )#{table_name}\\1"), '\1' + "#{quoted_table_name}" + '\1')
+            .gsub(replacement_to, replacement_from)
         else
           by_empty_scope_or_relation
         end
