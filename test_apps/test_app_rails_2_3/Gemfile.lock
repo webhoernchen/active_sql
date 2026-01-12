@@ -1,5 +1,5 @@
 PATH
-  remote: ../../
+  remote: ../..
   specs:
     active_sql (1.0)
       activerecord
@@ -33,7 +33,7 @@ GEM
       activeresource (= 2.3.18)
       activesupport (= 2.3.18)
       rake (>= 0.8.3)
-    rake (10.1.0)
+    rake (13.0.1)
     rdoc (4.0.1)
       json (~> 1.4)
     shoulda (3.0.1)
